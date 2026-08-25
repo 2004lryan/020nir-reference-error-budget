@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1130 476" width="1130" height="476" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1130" height="476" fill="#FFFFFF"/>
+  <defs>
+    <marker id="arrow-default" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#555555"/>
+    </marker>
+    <marker id="arrow-c0" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-c1" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#10B981"/>
+    </marker>
+    <marker id="arrow-c2" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#7C3AED"/>
+    </marker>
+    <marker id="arrow-c3" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#EA580C"/>
+    </marker>
+    <marker id="arrow-c4" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#C62828"/>
+    </marker>
+    <marker id="arrow-c5" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#0D47A1"/>
+    </marker>
+    <marker id="arrow-c6" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#1B5E20"/>
+    </marker>
+    <marker id="arrow-c7" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#4A148C"/>
+    </marker>
+    <marker id="arrow-c8" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#BF360C"/>
+    </marker>
+    <marker id="arrow-c9" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 8 4, 0 8" fill="#37474F"/>
+    </marker>
+  </defs>
+  <rect x="6.0" y="55.0" width="541.0" height="290.0" fill="#FAFBFC" stroke="#D6DCE2" stroke-width="1" rx="8"/>
+  <text x="14.0" y="71.0" font-size="11" fill="#999999" font-weight="bold">A.  The premise that is never checked</text>
+  <rect x="563.0" y="62.0" width="268.0" height="279.0" fill="#FAFBFC" stroke="#D6DCE2" stroke-width="1" rx="8"/>
+  <text x="571.0" y="78.0" font-size="11" fill="#999999" font-weight="bold">B.  Decompose it into an error budget</text>
+  <rect x="847.0" y="62.0" width="272.0" height="360.0" fill="#FAFBFC" stroke="#D6DCE2" stroke-width="1" rx="8"/>
+  <text x="855.0" y="78.0" font-size="11" fill="#999999" font-weight="bold">C.  Two tools, runnable on your own data</text>
+  <path d="M 160.0,109.0 L 180.0,109.0" stroke="#3B6EA5" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <path d="M 296.0,127.0 L 335.0,139.1" stroke="#3B6EA5" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <path d="M 160.0,226.0 L 174.0,226.0" stroke="#E08A2E" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <path d="M 306.0,205.6 L 335.0,196.7" stroke="#E08A2E" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <path d="M 521.0,149.0 L 613.0,130.2" stroke="#7A7A7A" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <rect x="536.0" y="121.6" width="62.0" height="16" fill="#FFFFFF" rx="3" opacity="0.85"/>
+  <text x="567.0" y="133.6" font-size="10" fill="#777777" text-anchor="middle">decompose</text>
+  <path d="M 521.0,178.0 L 628.0,189.6" stroke="#7A7A7A" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <path d="M 697.0,222.0 L 697.0,263.0" stroke="#C0392B" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <rect x="672.0" y="224.5" width="50.0" height="16" fill="#FFFFFF" rx="3" opacity="0.85"/>
+  <text x="697.0" y="236.5" font-size="10" fill="#777777" text-anchor="middle">caps R²</text>
+  <path d="M 739.7,263.0 Q 854.8,228.1 938.6,142.0" stroke="#7A7A7A" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <rect x="825.0" y="197.3" width="44.0" height="16" fill="#FFFFFF" rx="3" opacity="0.85"/>
+  <text x="847.0" y="209.3" font-size="10" fill="#777777" text-anchor="middle">invert</text>
+  <path d="M 805.0,289.0 L 873.0,289.0" stroke="#7A7A7A" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <rect x="823.0" y="271.0" width="32.0" height="16" fill="#FFFFFF" rx="3" opacity="0.85"/>
+  <text x="839.0" y="283.0" font-size="10" fill="#777777" text-anchor="middle">test</text>
+  <path d="M 983.0,316.0 L 983.0,346.0" stroke="#3F8F5C" stroke-width="2" fill="none" marker-end="url(#arrow-default)"/>
+  <rect x="32.0" y="88.0" width="128.0" height="42.0" fill="#EAF1F8" stroke="#3B6EA5" stroke-width="2" rx="8"/>
+  <text x="96.0" y="113.4" font-size="12.5" fill="#222222" text-anchor="middle" font-weight="bold">NIR spectrum</text>
+  <rect x="180.0" y="81.0" width="116.0" height="56.0" fill="#EAF1F8" stroke="#3B6EA5" stroke-width="2" rx="8"/>
+  <text x="238.0" y="98.9" font-size="12.5" fill="#222222" text-anchor="middle" font-weight="bold">calibration</text>
+  <text x="238.0" y="113.4" font-size="12.5" fill="#222222" text-anchor="middle" font-weight="bold">model</text>
+  <text x="238.0" y="127.9" font-size="9.5" fill="#888888" text-anchor="middle">prediction ŷ</text>
+  <rect x="32.0" y="205.0" width="128.0" height="42.0" fill="#FBF0E2" stroke="#E08A2E" stroke-width="2" rx="8"/>
+  <text x="96.0" y="230.4" font-size="12.5" fill="#222222" text-anchor="middle" font-weight="bold">one fruit</text>
+  <rect x="174.0" y="198.0" width="132.0" height="56.0" fill="#FBF0E2" stroke="#E08A2E" stroke-width="2" rx="8"/>
+  <text x="240.0" y="216.2" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">5 destructive</text>
+  <text x="240.0" y="230.2" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">determinations</text>
+  <text x="240.0" y="244.2" font-size="9" fill="#888888" text-anchor="middle">reference mean ȳ</text>
+  <rect x="335.0" y="139.0" width="186.0" height="58.0" fill="#FFFFFF" stroke="#7A7A7A" stroke-width="2" rx="8"/>
+  <text x="428.0" y="164.8" font-size="15" fill="#222222" text-anchor="middle" font-weight="bold">R²  /  RMSEP</text>
+  <text x="428.0" y="181.8" font-size="12" fill="#888888" text-anchor="middle">judged against the reference</text>
+  <rect x="70.0" y="285.0" width="414.0" height="34.0" fill="#FBEAE8" stroke="#C0392B" stroke-width="2" rx="8"/>
+  <text x="277.0" y="306.6" font-size="13" fill="#C0392B" text-anchor="middle" font-weight="bold">the comparison treats the reference as exact — it is not</text>
+  <rect x="613.0" y="88.0" width="168.0" height="50.0" fill="#E7F2EA" stroke="#3F8F5C" stroke-width="2" rx="8"/>
+  <text x="697.0" y="102.9" font-size="12.5" fill="#222222" text-anchor="middle" font-weight="bold">between-fruit</text>
+  <text x="697.0" y="117.4" font-size="12.5" fill="#222222" text-anchor="middle" font-weight="bold">47.70%</text>
+  <text x="697.0" y="131.9" font-size="9.5" fill="#888888" text-anchor="middle">the signal — hence the ceiling</text>
+  <rect x="628.0" y="172.0" width="138.0" height="50.0" fill="#FBF0E2" stroke="#E08A2E" stroke-width="2" rx="8"/>
+  <text x="697.0" y="186.9" font-size="12.5" fill="#222222" text-anchor="middle" font-weight="bold">within-fruit</text>
+  <text x="697.0" y="201.4" font-size="12.5" fill="#222222" text-anchor="middle" font-weight="bold">52.30%</text>
+  <text x="697.0" y="215.9" font-size="9.5" fill="#888888" text-anchor="middle">the reference’s own noise</text>
+  <rect x="589.0" y="263.0" width="216.0" height="52.0" fill="#FBEAE8" stroke="#C0392B" stroke-width="2" rx="8"/>
+  <text x="697.0" y="285.9" font-size="14" fill="#C0392B" text-anchor="middle" font-weight="bold">ceiling R² = 0.477</text>
+  <text x="697.0" y="301.9" font-size="11" fill="#888888" text-anchor="middle">one face;  0.820 for the mean of all five</text>
+  <rect x="873.0" y="88.0" width="220.0" height="54.0" fill="#EAF1F8" stroke="#3B6EA5" stroke-width="2" rx="8"/>
+  <text x="983.0" y="112.0" font-size="13.5" fill="#222222" text-anchor="middle" font-weight="bold">Design rule</text>
+  <text x="983.0" y="127.5" font-size="10.5" fill="#888888" text-anchor="middle">target R² → replicates needed</text>
+  <rect x="873.0" y="262.0" width="220.0" height="54.0" fill="#EAF1F8" stroke="#3B6EA5" stroke-width="2" rx="8"/>
+  <text x="983.0" y="286.0" font-size="13.5" fill="#222222" text-anchor="middle" font-weight="bold">Attenuation diagnostic</text>
+  <text x="983.0" y="301.5" font-size="10.5" fill="#888888" text-anchor="middle">no free parameter — falsifiable</text>
+  <rect x="873.0" y="346.0" width="220.0" height="50.0" fill="#E7F2EA" stroke="#3F8F5C" stroke-width="2" rx="8"/>
+  <text x="983.0" y="368.3" font-size="11.5" fill="#222222" text-anchor="middle" font-weight="bold">measured 0.564 [0.531, 0.596]</text>
+  <text x="983.0" y="381.8" font-size="8.5" fill="#888888" text-anchor="middle">contains the predicted 0.5816; excludes 0.477</text>
+  <text x="240.0" y="264.0" font-size="11" fill="#7A7A7A" text-anchor="middle">633 apples × 5 faces</text>
+  <text x="565.0" y="456.0" font-size="14.5" fill="#222222" text-anchor="middle">Report calibration performance against a reference-limited ceiling, not against unity</text>
+</svg>
