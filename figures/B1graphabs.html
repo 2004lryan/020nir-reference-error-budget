@@ -2,133 +2,202 @@
 <html lang="en"><head><meta charset="UTF-8">
 <title>Graphical abstract</title>
 <meta name="hz:slide-selector" content=".infographic">
-<meta name="hz:canvas-width" content="1400">
-<meta name="hz:canvas-height" content="560">
+<meta name="hz:canvas-width" content="1500">
+<meta name="hz:canvas-height" content="548">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#fff}
-/* 不给 @page 定尺寸，Chrome --print-to-pdf 会按 Letter 出并把右栏裁掉 */
-@page{size:1400px 560px;margin:0}
+/* 不给 @page 定尺寸，Chrome --print-to-pdf 会按 Letter 出并把右侧裁掉 */
+@page{size:1500px 548px;margin:0}
 @media print{body{margin:0}.infographic{page-break-after:avoid}}
-.infographic{position:relative;width:1400px;height:560px;background:#fff;
-  font-family:"Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif;
-  color:#16233A;overflow:hidden}
-.hdr{position:absolute;left:0;top:0;width:1400px;height:78px;background:#16233A;
-  display:flex;align-items:center;padding:0 44px}
-.hdr h1{font-size:27px;font-weight:600;color:#fff;letter-spacing:-.2px}
-.hdr .em{color:#F2B872}
-.col{position:absolute;top:112px}
-.step{font-size:12px;font-weight:700;letter-spacing:1.6px;color:#5C6B84;margin-bottom:9px}
-.h2{font-size:19px;font-weight:600;margin-bottom:13px;line-height:1.28}
-.p{font-size:14.5px;line-height:1.52;color:#5C6B84}
-.big{font-size:54px;font-weight:600;letter-spacing:-2px;color:#B0392B;line-height:1}
-.big .u{font-size:26px;font-weight:500;letter-spacing:-.3px}
-.sub{font-size:14px;color:#5C6B84;margin-top:8px;line-height:1.5}
-.rule{position:absolute;top:112px;width:1px;height:352px;background:#DDE2EA}
-.foot{position:absolute;left:0;bottom:0;width:1400px;height:62px;background:#F4F6F9;
-  display:flex;align-items:center;justify-content:center;border-top:1px solid #E3E7EE}
-.foot span{font-size:17px;font-weight:500;color:#16233A}
-.tool{margin-bottom:26px}
-.tool .t{font-size:15.5px;font-weight:600;margin-bottom:4px}
-.tool .d{font-size:13.5px;color:#5C6B84;line-height:1.55}
-text{font-family:"Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif}
+.infographic{position:relative;width:1500px;height:548px;background:#fff;
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#1B2C42;overflow:hidden}
+svg text{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
+.it{font-style:italic}
 </style></head>
-<body><div class="infographic" data-canvas-width="1400" data-canvas-height="560">
+<body><div class="infographic" data-canvas-width="1500" data-canvas-height="548">
+<svg width="1500" height="548" viewBox="0 0 1500 548">
+<defs>
+  <linearGradient id="ap" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#E4694A"/><stop offset="1" stop-color="#9CBF52"/>
+  </linearGradient>
+  <pattern id="hatch" width="7" height="7" patternTransform="rotate(45)"
+    patternUnits="userSpaceOnUse">
+    <line x1="0" y1="0" x2="0" y2="7" stroke="#A9C5DE" stroke-width="2.4" opacity=".55"/>
+  </pattern>
+</defs>
 
-<div class="hdr"><h1>Calibration R&sup2; is capped by the reference,
-  <span class="em">not by the model</span></h1></div>
+<!-- ══ header ══ -->
+<text x="24" y="30" font-size="21" font-weight="700" fill="#1F4E79" letter-spacing=".2">
+  AN ERROR BUDGET FOR NIR FRUIT CALIBRATION</text>
+<text x="24" y="50" font-size="12.5" font-style="italic" fill="#5E6E82">
+  reference-replicate design rule &#183; falsifiable attenuation diagnostic &#183;
+  leakage-audited validation</text>
+<text x="1476" y="30" font-size="11.5" fill="#5E6E82" text-anchor="end">
+  apples 633 &#215; 5 faces &#183; kiwifruit 4,318 &#215; 2&#8211;5 devices</text>
 
-<div class="rule" style="left:466px"></div>
-<div class="rule" style="left:933px"></div>
+<!-- ══ 1 REFERENCE SIDE ══ -->
+<rect x="24" y="66" width="342" height="236" rx="9" fill="#FFFFFF" stroke="#DFE5EC" stroke-width="1.2"/><circle cx="50" cy="91" r="11.5" fill="#1F4E79"/><text x="50" y="96" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">1</text><text x="70" y="97" font-size="15.5" font-weight="700" fill="#1F4E79" letter-spacing=".4">REFERENCE SIDE</text><line x1="40" y1="109" x2="350" y2="109" stroke="#DFE5EC"/>
+<g transform="translate(24,66)">
+  <ellipse cx="86" cy="168" rx="46" ry="7" fill="#000" opacity=".07"/>
+  <path d="M86 74 C58 66 34 88 34 122 C34 154 58 176 86 176 C114 176 138 154 138 122
+           C138 88 114 66 86 74 Z" fill="url(#ap)"/>
+  <path d="M86 76 C88 66 96 58 108 56 C106 68 98 74 86 76 Z" fill="#5C8A3A"/>
+  <path d="M86 76 L84 62" stroke="#6B4A2A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <ellipse cx="64" cy="104" rx="11" ry="17" fill="#fff" opacity=".2"/>
+  <circle cx="86.0" cy="90.0" r="6" fill="#FFF6E6" stroke="#E8A33D" stroke-width="1.6"/><circle cx="86.0" cy="90.0" r="1.9" fill="#B0392B"/><circle cx="118.3" cy="113.5" r="6" fill="#FFF6E6" stroke="#E8A33D" stroke-width="1.6"/><circle cx="118.3" cy="113.5" r="1.9" fill="#B0392B"/><circle cx="106.0" cy="151.5" r="6" fill="#FFF6E6" stroke="#E8A33D" stroke-width="1.6"/><circle cx="106.0" cy="151.5" r="1.9" fill="#B0392B"/><circle cx="66.0" cy="151.5" r="6" fill="#FFF6E6" stroke="#E8A33D" stroke-width="1.6"/><circle cx="66.0" cy="151.5" r="1.9" fill="#B0392B"/><circle cx="53.7" cy="113.5" r="6" fill="#FFF6E6" stroke="#E8A33D" stroke-width="1.6"/><circle cx="53.7" cy="113.5" r="1.9" fill="#B0392B"/>
+  <text x="86" y="200" font-size="12" font-style="italic" fill="#5E6E82"
+    text-anchor="middle">one fruit, five answers</text>
+  <circle cx="152" cy="74" r="3.4" fill="#E8A33D"/><text x="164" y="70" font-size="12" fill="#5E6E82">apples &#215; flesh faces</text><text x="164" y="87" font-size="14.5" font-weight="700" fill="#1B2C42">633 &#215; 5</text><circle cx="152" cy="124" r="3.4" fill="#E8A33D"/><text x="164" y="120" font-size="12" fill="#5E6E82">median 5-face range</text><text x="164" y="137" font-size="14.5" font-weight="700" fill="#1B2C42">2.80 &#176;Brix</text><circle cx="152" cy="174" r="3.4" fill="#E8A33D"/><text x="164" y="170" font-size="12" fill="#5E6E82">within-fruit SD vs meter</text><text x="164" y="187" font-size="14.5" font-weight="700" fill="#1B2C42">5.6 &#215; spec (&#177;0.2)</text>
+</g>
+<path d="M374,177 L383,184 L374,191 Z" fill="#1F4E79"/>
 
-<div class="col" style="left:44px;width:382px">
-  <div class="step">THE UNCHECKED PREMISE</div>
-  <div class="h2">One fruit, five destructive<br>determinations &mdash; they disagree.</div>
-  <svg width="382" height="120" viewBox="0 0 382 120">
-    <circle cx="60" cy="60" r="42" fill="#FBF0E2" stroke="#D9822B" stroke-width="2"/>
-    <circle cx="60.0" cy="34.0" r="6.5" fill="#D9822B" opacity="1"/><circle cx="84.7" cy="52.0" r="6.5" fill="#D9822B" opacity=".62"/><circle cx="75.3" cy="81.0" r="6.5" fill="#D9822B" opacity=".86"/><circle cx="44.7" cy="81.0" r="6.5" fill="#D9822B" opacity=".5"/><circle cx="35.3" cy="52.0" r="6.5" fill="#D9822B" opacity=".74"/>
-    <text x="122" y="44" font-size="14.5" fill="#5C6B84">reference value &#563;</text>
-    <text x="122" y="66" font-size="14.5" fill="#5C6B84">carries its own</text>
-    <text x="122" y="88" font-size="15" font-weight="600" fill="#D9822B">measurement noise</text>
-  </svg>
-  <div class="p" style="margin-top:6px">Yet R&sup2; and RMSEP are read as if &#563; were
-  exact. In 633 apples the reference&rsquo;s own scatter is
-  <b style="color:#D9822B">52.30%</b> of the total.</div>
-  <svg width="382" height="52" viewBox="0 0 382 52" style="margin-top:14px">
-    <rect x="0" y="8" width="182.2" height="26" fill="#2E7D5B" opacity=".85"/>
-    <rect x="182.2" y="8" width="199.8" height="26"
-      fill="#D9822B" opacity=".85"/>
-    <text x="6" y="26" font-size="13" font-weight="600" fill="#fff">between-fruit 47.70%</text>
-    <text x="189.2" y="26" font-size="13" font-weight="600"
-      fill="#fff">within-fruit 52.30%</text>
-    <text x="0" y="48" font-size="12" fill="#5C6B84">signal</text>
-    <text x="382" y="48" font-size="12" fill="#5C6B84" text-anchor="end">noise in the reference</text>
-  </svg>
-</div>
+<!-- ══ 2 ERROR BUDGET ══ -->
+<rect x="390" y="66" width="342" height="236" rx="9" fill="#FFFFFF" stroke="#DFE5EC" stroke-width="1.2"/><circle cx="416" cy="91" r="11.5" fill="#1F4E79"/><text x="416" y="96" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">2</text><text x="436" y="97" font-size="15.5" font-weight="700" fill="#1F4E79" letter-spacing=".4">ERROR BUDGET</text><line x1="406" y1="109" x2="716" y2="109" stroke="#DFE5EC"/>
+<g transform="translate(390,66)">
+  <text x="16" y="70" font-size="15" font-style="italic" font-weight="700" fill="#1B2C42">
+    Y<tspan font-size="10.5" dy="4">ij</tspan>
+    <tspan dy="-4"> = &#956; + a</tspan><tspan font-size="10.5" dy="4">i</tspan>
+    <tspan dy="-4"> + e</tspan><tspan font-size="10.5" dy="4">ij</tspan></text>
+  <text x="326" y="70" font-size="12.5" fill="#5E6E82" text-anchor="end">
+    &#963;a&#178; = 2.327 &#160; &#963;f&#178; = 2.551</text>
+  <text x="16" y="94" font-size="12.5" fill="#5E6E82">reference variance</text>
+  <text x="326" y="94" font-size="12.5" font-weight="700" fill="#1F4E79" text-anchor="end">
+    ICC 0.477 [0.436, 0.515]</text>
+  <rect x="16" y="104" width="310" height="27" rx="6" fill="#1F4E79"/>
+  <rect x="16" y="104" width="162.1" height="27" rx="6" fill="#E8A33D"/>
+  <rect x="170.1" y="104" width="8" height="27" fill="#E8A33D"/>
+  <text x="97.1" y="122" font-size="12.5" font-weight="700"
+    fill="#fff" text-anchor="middle">52.3% within</text>
+  <text x="252.1" y="122" font-size="12.5"
+    font-weight="700" fill="#fff" text-anchor="middle">47.7% between</text>
+  <text x="16" y="163" font-size="14" font-style="italic" font-weight="700" fill="#1B2C42">
+    RMSEP&#178; = model + &#963;f&#178;/m + instrument</text>
+  <rect x="16" y="175" width="310" height="26" rx="6" fill="#1F4E79"/>
+  <rect x="140" y="175" width="105" height="26" fill="#A9C5DE"/>
+  <rect x="245" y="175" width="81" height="26" rx="6" fill="#8A99AB"/>
+  <rect x="245" y="175" width="8" height="26" fill="#8A99AB"/>
+  <text x="78" y="192" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">model</text>
+  <text x="192" y="192" font-size="12" font-weight="700" fill="#1F4E79" text-anchor="middle">reference</text>
+  <text x="285" y="192" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">instrument</text>
+  <text x="16" y="222" font-size="12" font-style="italic" fill="#5E6E82">
+    two of the three parts are not the model&#8217;s &#8212;</text>
+  <text x="16" y="237" font-size="12" font-style="italic" fill="#5E6E82">
+    decompose before tuning models</text>
+</g>
+<path d="M740,177 L749,184 L740,191 Z" fill="#1F4E79"/>
 
-<div class="col" style="left:510px;width:382px">
-  <div class="step">THE ERROR BUDGET</div>
-  <div class="h2">That noise sets a ceiling no<br>model can pass.</div>
-  <div class="big">0.477<span class="u"> max R&sup2;</span></div>
-  <div class="sub">against a single-face reference; <b style="color:#16233A">0.820</b>
-  against the five-face mean. Not fitted &mdash; it follows from the variance split alone.</div>
-  <svg width="352" height="162" viewBox="-42 -10 364 202" style="margin-top:14px">
-    <line x1="0" y1="150.0" x2="300" y2="150.0" stroke="#CFD6E0"/>
-    <line x1="0" y1="0" x2="0" y2="150.0" stroke="#CFD6E0"/>
-    <g><line x1="-5" y1="120.0" x2="0" y2="120.0" stroke="#CFD6E0"/><text x="-9" y="124.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.5</text></g><g><line x1="-5" y1="90.0" x2="0" y2="90.0" stroke="#CFD6E0"/><text x="-9" y="94.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.6</text></g><g><line x1="-5" y1="60.0" x2="0" y2="60.0" stroke="#CFD6E0"/><text x="-9" y="64.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.7</text></g><g><line x1="-5" y1="30.0" x2="0" y2="30.0" stroke="#CFD6E0"/><text x="-9" y="34.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.8</text></g><g><line x1="-5" y1="0.0" x2="0" y2="0.0" stroke="#CFD6E0"/><text x="-9" y="4.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.9</text></g>
-    <path d="M0.0,126.9 L33.3,76.2 L66.7,50.3 L100.0,34.5 L133.3,24.0 L166.7,16.4 L200.0,10.6 L233.3,6.2 L266.7,2.6 L300.0,-0.4" fill="none" stroke="#2E5E8C" stroke-width="2.6"/>
-    <circle cx="0.0" cy="126.9" r="6" fill="#B0392B"/>
-    <circle cx="133.3" cy="24.0" r="6" fill="#2E7D5B"/>
-    <text x="11.0" y="131.9" font-size="12.5" font-weight="600"
-      fill="#B0392B">0.477</text>
-    <text x="144.3" y="29.0" font-size="12.5" font-weight="600"
-      fill="#2E7D5B">0.820</text>
-    <text x="0.0" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">1</text><text x="66.7" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">3</text><text x="133.3" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">5</text><text x="200.0" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">7</text><text x="300.0" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">10</text>
-    <text x="150" y="190" font-size="12.5" fill="#5C6B84"
-      text-anchor="middle">reference replicates per fruit</text>
-  </svg>
-</div>
+<!-- ══ 3 ATTAINABLE CEILING ══ -->
+<rect x="756" y="66" width="342" height="236" rx="9" fill="#FFFFFF" stroke="#DFE5EC" stroke-width="1.2"/><circle cx="782" cy="91" r="11.5" fill="#1F4E79"/><text x="782" y="96" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">3</text><text x="802" y="97" font-size="15.5" font-weight="700" fill="#1F4E79" letter-spacing=".4">ATTAINABLE CEILING</text><line x1="772" y1="109" x2="1082" y2="109" stroke="#DFE5EC"/>
+<g transform="translate(812,124)">
+  <rect x="0" y="0" width="210" height="132.0" fill="url(#hatch)" opacity=".5"/>
+  <path d="M0.0,98.6 L5.8,88.1 L11.7,79.6 L17.5,72.6 L23.3,66.8 L29.2,61.8 L35.0,57.5 L40.8,53.8 L46.7,50.5 L52.5,47.6 L58.3,45.0 L64.2,42.7 L70.0,40.6 L75.8,38.7 L81.7,36.9 L87.5,35.4 L93.3,33.9 L99.2,32.6 L105.0,31.3 L110.8,30.2 L116.7,29.1 L122.5,28.1 L128.3,27.2 L134.2,26.4 L140.0,25.5 L145.8,24.8 L151.7,24.1 L157.5,23.4 L163.3,22.7 L169.2,22.1 L175.0,21.5 L180.8,21.0 L186.7,20.5 L192.5,20.0 L198.3,19.5 L204.2,19.1 L210.0,18.6 L210,132 L0,132 Z" fill="#fff"/>
+  <text x="14" y="17" font-size="10.5" fill="#8A99AB" letter-spacing="1.2">UNATTAINABLE</text>
+  <path d="M0.0,98.6 L5.8,88.1 L11.7,79.6 L17.5,72.6 L23.3,66.8 L29.2,61.8 L35.0,57.5 L40.8,53.8 L46.7,50.5 L52.5,47.6 L58.3,45.0 L64.2,42.7 L70.0,40.6 L75.8,38.7 L81.7,36.9 L87.5,35.4 L93.3,33.9 L99.2,32.6 L105.0,31.3 L110.8,30.2 L116.7,29.1 L122.5,28.1 L128.3,27.2 L134.2,26.4 L140.0,25.5 L145.8,24.8 L151.7,24.1 L157.5,23.4 L163.3,22.7 L169.2,22.1 L175.0,21.5 L180.8,21.0 L186.7,20.5 L192.5,20.0 L198.3,19.5 L204.2,19.1 L210.0,18.6" fill="none" stroke="#1F4E79" stroke-width="2.6"/>
+  <circle cx="0.0" cy="98.6" r="5" fill="#E8A33D" stroke="#fff" stroke-width="1.6"/><text x="7.0" y="113.6" font-size="11" font-weight="700" fill="#E8A33D" text-anchor="start">0.477</text><circle cx="46.7" cy="50.5" r="5" fill="#E8A33D" stroke="#fff" stroke-width="1.6"/><text x="53.7" y="67.5" font-size="11" font-weight="700" fill="#E8A33D" text-anchor="start">0.732</text><circle cx="93.3" cy="33.9" r="5" fill="#E8A33D" stroke="#fff" stroke-width="1.6"/><text x="100.3" y="24.9" font-size="11" font-weight="700" fill="#E8A33D" text-anchor="start">0.820</text><circle cx="210.0" cy="18.6" r="5" fill="#E8A33D" stroke="#fff" stroke-width="1.6"/><text x="203.0" y="9.6" font-size="11" font-weight="700" fill="#E8A33D" text-anchor="end">0.901</text>
+  <line x1="0" y1="0" x2="0" y2="132" stroke="#5E6E82" stroke-width="1.1"/>
+  <line x1="0" y1="132" x2="210" y2="132" stroke="#5E6E82" stroke-width="1.1"/>
+  <text x="-8" y="4" font-size="10.5" fill="#5E6E82" text-anchor="end">1.0</text>
+  <text x="-8" y="98.3" font-size="10.5" fill="#5E6E82" text-anchor="end">0.5</text>
+  <text x="-8" y="136" font-size="10.5" fill="#5E6E82" text-anchor="end">0.3</text>
+  <text x="-30" y="66" font-size="12" font-weight="700" fill="#1B2C42">R&#178;</text>
+  <text x="0" y="149" font-size="10.5" fill="#5E6E82" text-anchor="middle">1</text>
+  <text x="93.3" y="149" font-size="10.5" fill="#5E6E82" text-anchor="middle">5</text>
+  <text x="210" y="149" font-size="10.5" fill="#5E6E82" text-anchor="middle">10</text>
+  <text x="105" y="165" font-size="11.5" fill="#5E6E82"
+    text-anchor="middle">reference replicates m</text>
+  <line x1="24" y1="125.4" x2="24" y2="72.6"
+    stroke="#5E6E82" stroke-width="1.4"/>
+  <line x1="19" y1="72.6" x2="29" y2="72.6" stroke="#5E6E82" stroke-width="1.4"/>
+  <line x1="19" y1="125.4" x2="29" y2="125.4" stroke="#5E6E82" stroke-width="1.4"/>
+  <text x="34" y="129.4" font-size="10.5" fill="#5E6E82">origin groups
+    0.335&#8211;0.615</text>
+</g>
+<path d="M1106,177 L1115,184 L1106,191 Z" fill="#1F4E79"/>
 
-<div class="col" style="left:977px;width:382px">
-  <div class="step">WHAT YOU GET</div>
-  <div class="tool">
-    <div class="t">1 &nbsp;A design rule</div>
-    <div class="d">Invert the ceiling: name a target R&sup2;, read off how many
-    replicate determinations your reference needs.</div>
-  </div>
-  <div class="tool">
-    <div class="t">2 &nbsp;A falsifiable diagnostic</div>
-    <div class="d">Predicts the attenuation ratio with
-    <b style="color:#16233A">no free parameter</b>, so it can be wrong.
-    On 633 apples it was not.</div>
-  </div>
-  <svg width="382" height="150" viewBox="-14 -32 334 150" style="margin-top:4px">
-    <line x1="0" y1="24" x2="300" y2="24" stroke="#CFD6E0"/>
-    <g><line x1="0.0" y1="24" x2="0.0" y2="29" stroke="#CFD6E0"/><text x="0.0" y="45" font-size="11.5" fill="#5C6B84" text-anchor="middle">0.45</text></g><g><line x1="88.2" y1="24" x2="88.2" y2="29" stroke="#CFD6E0"/><text x="88.2" y="45" font-size="11.5" fill="#5C6B84" text-anchor="middle">0.50</text></g><g><line x1="176.5" y1="24" x2="176.5" y2="29" stroke="#CFD6E0"/><text x="176.5" y="45" font-size="11.5" fill="#5C6B84" text-anchor="middle">0.55</text></g><g><line x1="264.7" y1="24" x2="264.7" y2="29" stroke="#CFD6E0"/><text x="264.7" y="45" font-size="11.5" fill="#5C6B84" text-anchor="middle">0.60</text></g>
-    <line x1="142.5" y1="24" x2="257.9" y2="24" stroke="#2E7D5B"
-      stroke-width="7" stroke-linecap="round"/>
-    <circle cx="200.6" cy="24" r="6.5" fill="#2E7D5B"/>
-    <text x="200.6" y="8" font-size="13" font-weight="600" fill="#2E7D5B"
-      text-anchor="middle">measured 0.564</text>
-    <text x="200.6" y="-9" font-size="11.5" fill="#5C6B84"
-      text-anchor="middle">95% CI [0.531, 0.596]</text>
-    <line x1="232.2" y1="12" x2="232.2" y2="36" stroke="#16233A"
-      stroke-width="2" stroke-dasharray="3 2"/>
-    <text x="232.2" y="63" font-size="12" font-weight="600" fill="#16233A"
-      text-anchor="middle">predicted 0.5816</text>
-    <text x="232.2" y="79" font-size="11.5" fill="#5C6B84"
-      text-anchor="middle">inside the interval &#10003;</text>
-    <line x1="47.6" y1="12" x2="47.6" y2="36" stroke="#B0392B"
-      stroke-width="2" stroke-dasharray="3 2"/>
-    <text x="47.6" y="63" font-size="12" font-weight="600" fill="#B0392B"
-      text-anchor="middle">0.477</text>
-    <text x="47.6" y="79" font-size="11.5" fill="#5C6B84"
-      text-anchor="middle">excluded</text>
-    <text x="150" y="112" font-size="12.5" fill="#5C6B84"
-      text-anchor="middle">attenuation ratio &mdash; measured vs. predicted</text>
-  </svg>
-</div>
+<!-- ══ 4 DESIGN RULE ══ -->
+<rect x="1122" y="66" width="354" height="236" rx="9" fill="#FFFFFF" stroke="#DFE5EC" stroke-width="1.2"/><circle cx="1148" cy="91" r="11.5" fill="#1F4E79"/><text x="1148" y="96" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">4</text><text x="1168" y="97" font-size="15.5" font-weight="700" fill="#1F4E79" letter-spacing=".4">DESIGN RULE</text><line x1="1138" y1="109" x2="1460" y2="109" stroke="#DFE5EC"/>
+<g transform="translate(1122,66)">
+  <text x="177" y="72" font-size="14.5" font-style="italic" font-weight="700" fill="#1B2C42"
+    text-anchor="middle">m &#8805; (&#963;f&#178;/&#963;a&#178;) &#183; R&#178;/(1&#8722;R&#178;)</text>
 
-<div class="foot"><span>Report performance against a <b>reference-limited ceiling</b>
-  &mdash; not against unity.</span></div>
+  <g transform="translate(19,80)">
+    <text x="86" y="16" font-size="11.5" fill="#5E6E82" text-anchor="middle">target R&#178;</text>
+    <text x="242" y="16" font-size="11.5" fill="#5E6E82" text-anchor="middle">faces m &#8805;</text>
+    <rect x="8" y="44" width="308" height="24" rx="5" fill="#F4F7FA"/><text x="86" y="62" font-size="14.5" font-weight="700" fill="#1B2C42" text-anchor="middle">0.70</text><text x="242" y="62" font-size="14.5" font-weight="700" fill="#1F4E79" text-anchor="middle">3</text><rect x="8" y="69" width="308" height="24" rx="5" fill="#E8A33D"/><text x="86" y="87" font-size="14.5" font-weight="700" fill="#fff" text-anchor="middle">0.80</text><text x="242" y="87" font-size="14.5" font-weight="700" fill="#fff" text-anchor="middle">5</text><rect x="8" y="94" width="308" height="24" rx="5" fill="#F4F7FA"/><text x="86" y="112" font-size="14.5" font-weight="700" fill="#1B2C42" text-anchor="middle">0.90</text><text x="242" y="112" font-size="14.5" font-weight="700" fill="#1F4E79" text-anchor="middle">10</text><rect x="8" y="119" width="308" height="24" rx="5" fill="#F4F7FA"/><text x="86" y="137" font-size="14.5" font-weight="700" fill="#1B2C42" text-anchor="middle">0.95</text><text x="242" y="137" font-size="14.5" font-weight="700" fill="#1F4E79" text-anchor="middle">21</text>
+  </g>
+  <text x="177" y="230" font-size="10.5" fill="#5E6E82" text-anchor="middle">
+    &#963;f&#178;/&#963;a&#178; = 1.0965 from a pilot batch &#183;
+    <tspan font-style="italic">add one extra face as margin</tspan></text>
+</g>
+
+<!-- ══ 5 INSTRUMENT SIDE ══ -->
+<rect x="24" y="314" width="560" height="172" rx="9" fill="#FFFFFF" stroke="#DFE5EC" stroke-width="1.2"/><circle cx="50" cy="339" r="11.5" fill="#1F4E79"/><text x="50" y="344" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">5</text><text x="70" y="345" font-size="15.5" font-weight="700" fill="#1F4E79" letter-spacing=".4">INSTRUMENT SIDE (KIWIFRUIT)</text><line x1="40" y1="357" x2="568" y2="357" stroke="#DFE5EC"/>
+<g transform="translate(24,314)">
+  <circle cx="58" cy="106" r="34" fill="#8A6B3F"/>
+  <circle cx="58" cy="106" r="29" fill="#A7C24E"/>
+  <ellipse cx="58" cy="106" rx="11" ry="13" fill="#F0F4DC"/>
+  <ellipse cx="78.0" cy="106.0" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(0 78.0 106.0)"/><ellipse cx="75.3" cy="117.0" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(30 75.3 117.0)"/><ellipse cx="68.0" cy="125.1" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(60 68.0 125.1)"/><ellipse cx="58.0" cy="128.0" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(90 58.0 128.0)"/><ellipse cx="48.0" cy="125.1" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(120 48.0 125.1)"/><ellipse cx="40.7" cy="117.0" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(150 40.7 117.0)"/><ellipse cx="38.0" cy="106.0" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(180 38.0 106.0)"/><ellipse cx="40.7" cy="95.0" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(210 40.7 95.0)"/><ellipse cx="48.0" cy="86.9" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(240 48.0 86.9)"/><ellipse cx="58.0" cy="84.0" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(270 58.0 84.0)"/><ellipse cx="68.0" cy="86.9" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(300 68.0 86.9)"/><ellipse cx="75.3" cy="95.0" rx="2.6" ry="3.6" fill="#2E2A20" transform="rotate(330 75.3 95.0)"/>
+  <rect x="104" y="76" width="42" height="24" rx="5" fill="#A9C5DE" stroke="#2E6DA4"/>
+  <rect x="104" y="114" width="42" height="24" rx="5" fill="#A9C5DE" stroke="#2E6DA4"/>
+  <text x="125" y="92" font-size="12" font-weight="700" fill="#1F4E79" text-anchor="middle">D1</text>
+  <text x="125" y="130" font-size="12" font-weight="700" fill="#1F4E79" text-anchor="middle">D2</text>
+  <path d="M92 100 L104 88 M92 112 L104 126" stroke="#C9B99A" stroke-width="3" fill="none"/>
+  <text x="168" y="72" font-size="12.5" font-weight="700" fill="#5E6E82">
+    SNV-corrected spectral variance</text>
+  <rect x="168" y="80" width="374" height="27" rx="6" fill="#8A99AB"/>
+  <rect x="168" y="80" width="260.6" height="27" rx="6" fill="#A9C5DE"/>
+  <rect x="168" y="80" width="196.7" height="27" rx="6" fill="#1F4E79"/>
+  <text x="266.4" y="98" font-size="12.5" font-weight="700"
+    fill="#fff" text-anchor="middle">52.6%</text>
+  <text x="396.6" y="98" font-size="12"
+    font-weight="700" fill="#1F4E79" text-anchor="middle">17.1%</text>
+  <text x="485.3" y="98"
+    font-size="12" font-weight="700" fill="#fff" text-anchor="middle">30.3%</text>
+  <text x="168" y="124" font-size="11.5" fill="#5E6E82">
+    between fruit &#183; device &#183; fruit&#215;device</text>
+  <text x="20" y="156" font-size="12.5" font-weight="700" fill="#1B2C42">
+    device-linked error &#8776; 0.505 %DM &#8212; spans just
+    20.6% of its mean across ten points</text>
+  <text x="20" y="174" font-size="12.5" font-weight="700" fill="#B0392B">
+    yet its share of MSE rises 4.3% &#8594; 24.7%
+    (&#215;5.7) as the model improves</text>
+</g>
+
+<!-- ══ 6 VALIDATION AUDIT ══ -->
+<rect x="596" y="314" width="348" height="172" rx="9" fill="#FFFFFF" stroke="#DFE5EC" stroke-width="1.2"/><circle cx="622" cy="339" r="11.5" fill="#1F4E79"/><text x="622" y="344" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">6</text><text x="642" y="345" font-size="15.5" font-weight="700" fill="#1F4E79" letter-spacing=".4">VALIDATION AUDIT &#8212; SPLIT LEAKAGE</text><line x1="612" y1="357" x2="928" y2="357" stroke="#DFE5EC"/>
+<g transform="translate(596,314)">
+  <text x="60" y="62" font-size="11" fill="#5E6E82" text-anchor="middle">train</text>
+  <text x="176" y="62" font-size="11" fill="#5E6E82" text-anchor="middle">test</text>
+  <rect x="18" y="68" width="84" height="52" rx="6" fill="#F6F8FA" stroke="#DFE5EC"/>
+  <rect x="134" y="68" width="84" height="52" rx="6" fill="#F6F8FA" stroke="#DFE5EC"/>
+  <circle cx="30" cy="82" r="4" fill="#1F4E79"/><circle cx="46" cy="82" r="4" fill="#1F4E79"/><circle cx="30" cy="97" r="4" fill="#2E6DA4"/><circle cx="46" cy="97" r="4" fill="#2E6DA4"/><circle cx="30" cy="112" r="4" fill="#8A99AB"/><circle cx="46" cy="112" r="4" fill="#8A99AB"/>
+  <circle cx="146" cy="82" r="4" fill="#1F4E79"/><circle cx="162" cy="82" r="4" fill="#1F4E79"/><circle cx="146" cy="97" r="4" fill="#2E6DA4"/><circle cx="162" cy="97" r="4" fill="#2E6DA4"/><circle cx="146" cy="112" r="4" fill="#8A99AB"/><circle cx="162" cy="112" r="4" fill="#8A99AB"/>
+  <line x1="54" y1="82" x2="146" y2="82" stroke="#8A99AB" stroke-width="1.2" stroke-dasharray="3 3"/><line x1="54" y1="97" x2="146" y2="97" stroke="#8A99AB" stroke-width="1.2" stroke-dasharray="3 3"/><line x1="54" y1="112" x2="146" y2="112" stroke="#8A99AB" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <text x="232" y="92" font-size="20" font-weight="700" fill="#B0392B">&#10007;</text>
+  <text x="60" y="140" font-size="13" font-weight="700" fill="#B0392B" text-anchor="middle">
+    R&#178; 0.1692</text>
+  <text x="176" y="140" font-size="13" font-weight="700" fill="#1F4E79" text-anchor="middle">
+    R&#178; 0.1195</text>
+  <text x="60" y="155" font-size="11" fill="#B0392B" text-anchor="middle">random split &#8212; inflated</text>
+  <text x="176" y="155" font-size="11" fill="#1F4E79" text-anchor="middle">grouped &#8212; honest</text>
+  <text x="174" y="176" font-size="12.5" font-weight="700" fill="#B0392B" text-anchor="middle">
+    random splitting inflates R&#178; by 1.41&#8211;1.46&#215;</text>
+</g>
+
+<!-- ══ 7 FALSIFIABLE DIAGNOSTIC ══ -->
+<rect x="956" y="314" width="520" height="172" rx="9" fill="#FFFFFF" stroke="#DFE5EC" stroke-width="1.2"/><circle cx="982" cy="339" r="11.5" fill="#1F4E79"/><text x="982" y="344" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">7</text><text x="1002" y="345" font-size="15.5" font-weight="700" fill="#1F4E79" letter-spacing=".4">FALSIFIABLE ATTENUATION DIAGNOSTIC</text><line x1="972" y1="357" x2="1460" y2="357" stroke="#DFE5EC"/>
+<g transform="translate(956,314)">
+  <text x="20" y="62" font-size="12" font-style="italic" fill="#5E6E82">
+    six parameter-free predictions &#8212; all confirmed on held-out data</text>
+  <text x="20" y="96" font-size="12.5" font-weight="700" fill="#1B2C42">label-only baseline R&#178;</text><rect x="212" y="80" width="180" height="9" rx="4.5" fill="#EDF1F6"/><rect x="212" y="80" width="62.3" height="9" rx="4.5" fill="#A9C5DE"/><rect x="212" y="94" width="180" height="9" rx="4.5" fill="#EDF1F6"/><rect x="212" y="94" width="62.2" height="9" rx="4.5" fill="#1F4E79"/><text x="404" y="89" font-size="11.5" fill="#5E6E82">pred 0.3462</text><text x="404" y="104" font-size="11.5" font-weight="700" fill="#1F4E79">meas 0.3456</text><text x="492" y="97" font-size="15" font-weight="700" fill="#2E7D5B">&#10003;</text><text x="20" y="144" font-size="12.5" font-weight="700" fill="#1B2C42">attenuation ratio</text><rect x="212" y="128" width="180" height="9" rx="4.5" fill="#EDF1F6"/><rect x="212" y="128" width="104.7" height="9" rx="4.5" fill="#A9C5DE"/><rect x="212" y="142" width="180" height="9" rx="4.5" fill="#EDF1F6"/><rect x="212" y="142" width="101.5" height="9" rx="4.5" fill="#1F4E79"/><text x="404" y="137" font-size="11.5" fill="#5E6E82">pred 0.5816</text><text x="404" y="152" font-size="11.5" font-weight="700" fill="#1F4E79">meas 0.5636</text><text x="492" y="145" font-size="15" font-weight="700" fill="#2E7D5B">&#10003;</text>
+</g>
+
+<!-- ══ banner ══ -->
+<rect x="0" y="502" width="1500" height="46" fill="#1F4E79"/>
+<text x="750" y="531" font-size="14.5" font-weight="700" fill="#fff"
+  text-anchor="middle" letter-spacing=".3">
+  REPORTED R&#178; MUST BE READ AGAINST A REFERENCE-LIMITED CEILING, NOT AGAINST 1
+  &#8212; THE CEILING IS COMPUTABLE BEFORE THE EXPERIMENT</text>
+</svg>
 </div></body></html>
