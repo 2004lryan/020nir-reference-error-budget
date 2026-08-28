@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<title>Graphical abstract</title>
+<meta name="hz:slide-selector" content=".infographic">
+<meta name="hz:canvas-width" content="1400">
+<meta name="hz:canvas-height" content="560">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#fff}
+/* 不给 @page 定尺寸，Chrome --print-to-pdf 会按 Letter 出并把右栏裁掉 */
+@page{size:1400px 560px;margin:0}
+@media print{body{margin:0}.infographic{page-break-after:avoid}}
+.infographic{position:relative;width:1400px;height:560px;background:#fff;
+  font-family:"Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif;
+  color:#16233A;overflow:hidden}
+.hdr{position:absolute;left:0;top:0;width:1400px;height:78px;background:#16233A;
+  display:flex;align-items:center;padding:0 44px}
+.hdr h1{font-size:27px;font-weight:600;color:#fff;letter-spacing:-.2px}
+.hdr .em{color:#F2B872}
+.col{position:absolute;top:112px}
+.step{font-size:12px;font-weight:700;letter-spacing:1.6px;color:#5C6B84;margin-bottom:9px}
+.h2{font-size:19px;font-weight:600;margin-bottom:13px;line-height:1.28}
+.p{font-size:14.5px;line-height:1.52;color:#5C6B84}
+.big{font-size:54px;font-weight:600;letter-spacing:-2px;color:#B0392B;line-height:1}
+.big .u{font-size:26px;font-weight:500;letter-spacing:-.3px}
+.sub{font-size:14px;color:#5C6B84;margin-top:8px;line-height:1.5}
+.rule{position:absolute;top:112px;width:1px;height:352px;background:#DDE2EA}
+.foot{position:absolute;left:0;bottom:0;width:1400px;height:62px;background:#F4F6F9;
+  display:flex;align-items:center;justify-content:center;border-top:1px solid #E3E7EE}
+.foot span{font-size:17px;font-weight:500;color:#16233A}
+.tool{margin-bottom:26px}
+.tool .t{font-size:15.5px;font-weight:600;margin-bottom:4px}
+.tool .d{font-size:13.5px;color:#5C6B84;line-height:1.55}
+text{font-family:"Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif}
+</style></head>
+<body><div class="infographic" data-canvas-width="1400" data-canvas-height="560">
+
+<div class="hdr"><h1>Calibration R&sup2; is capped by the reference,
+  <span class="em">not by the model</span></h1></div>
+
+<div class="rule" style="left:466px"></div>
+<div class="rule" style="left:933px"></div>
+
+<div class="col" style="left:44px;width:382px">
+  <div class="step">THE UNCHECKED PREMISE</div>
+  <div class="h2">One fruit, five destructive<br>determinations &mdash; they disagree.</div>
+  <svg width="382" height="120" viewBox="0 0 382 120">
+    <circle cx="60" cy="60" r="42" fill="#FBF0E2" stroke="#D9822B" stroke-width="2"/>
+    <circle cx="60.0" cy="34.0" r="6.5" fill="#D9822B" opacity="1"/><circle cx="84.7" cy="52.0" r="6.5" fill="#D9822B" opacity=".62"/><circle cx="75.3" cy="81.0" r="6.5" fill="#D9822B" opacity=".86"/><circle cx="44.7" cy="81.0" r="6.5" fill="#D9822B" opacity=".5"/><circle cx="35.3" cy="52.0" r="6.5" fill="#D9822B" opacity=".74"/>
+    <text x="122" y="44" font-size="14.5" fill="#5C6B84">reference value &#563;</text>
+    <text x="122" y="66" font-size="14.5" fill="#5C6B84">carries its own</text>
+    <text x="122" y="88" font-size="15" font-weight="600" fill="#D9822B">measurement noise</text>
+  </svg>
+  <div class="p" style="margin-top:6px">Yet R&sup2; and RMSEP are read as if &#563; were
+  exact. In 633 apples the reference&rsquo;s own scatter is
+  <b style="color:#D9822B">52.30%</b> of the total.</div>
+  <svg width="382" height="52" viewBox="0 0 382 52" style="margin-top:14px">
+    <rect x="0" y="8" width="182.2" height="26" fill="#2E7D5B" opacity=".85"/>
+    <rect x="182.2" y="8" width="199.8" height="26"
+      fill="#D9822B" opacity=".85"/>
+    <text x="6" y="26" font-size="13" font-weight="600" fill="#fff">between-fruit 47.70%</text>
+    <text x="189.2" y="26" font-size="13" font-weight="600"
+      fill="#fff">within-fruit 52.30%</text>
+    <text x="0" y="48" font-size="12" fill="#5C6B84">signal</text>
+    <text x="382" y="48" font-size="12" fill="#5C6B84" text-anchor="end">noise in the reference</text>
+  </svg>
+</div>
+
+<div class="col" style="left:510px;width:382px">
+  <div class="step">THE ERROR BUDGET</div>
+  <div class="h2">That noise sets a ceiling no<br>model can pass.</div>
+  <div class="big">0.477<span class="u"> max R&sup2;</span></div>
+  <div class="sub">against a single-face reference; <b style="color:#16233A">0.820</b>
+  against the five-face mean. Not fitted &mdash; it follows from the variance split alone.</div>
+  <svg width="352" height="162" viewBox="-42 -10 364 202" style="margin-top:14px">
+    <line x1="0" y1="150.0" x2="300" y2="150.0" stroke="#CFD6E0"/>
+    <line x1="0" y1="0" x2="0" y2="150.0" stroke="#CFD6E0"/>
+    <g><line x1="-5" y1="120.0" x2="0" y2="120.0" stroke="#CFD6E0"/><text x="-9" y="124.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.5</text></g><g><line x1="-5" y1="90.0" x2="0" y2="90.0" stroke="#CFD6E0"/><text x="-9" y="94.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.6</text></g><g><line x1="-5" y1="60.0" x2="0" y2="60.0" stroke="#CFD6E0"/><text x="-9" y="64.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.7</text></g><g><line x1="-5" y1="30.0" x2="0" y2="30.0" stroke="#CFD6E0"/><text x="-9" y="34.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.8</text></g><g><line x1="-5" y1="0.0" x2="0" y2="0.0" stroke="#CFD6E0"/><text x="-9" y="4.0" font-size="11.5" fill="#5C6B84" text-anchor="end">0.9</text></g>
+    <path d="M0.0,126.9 L33.3,76.2 L66.7,50.3 L100.0,34.5 L133.3,24.0 L166.7,16.4 L200.0,10.6 L233.3,6.2 L266.7,2.6 L300.0,-0.4" fill="none" stroke="#2E5E8C" stroke-width="2.6"/>
+    <circle cx="0.0" cy="126.9" r="6" fill="#B0392B"/>
+    <circle cx="133.3" cy="24.0" r="6" fill="#2E7D5B"/>
+    <text x="11.0" y="131.9" font-size="12.5" font-weight="600"
+      fill="#B0392B">0.477</text>
+    <text x="144.3" y="29.0" font-size="12.5" font-weight="600"
+      fill="#2E7D5B">0.820</text>
+    <text x="0.0" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">1</text><text x="66.7" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">3</text><text x="133.3" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">5</text><text x="200.0" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">7</text><text x="300.0" y="169.0" font-size="11.5" fill="#5C6B84" text-anchor="middle">10</text>
+    <text x="150" y="190" font-size="12.5" fill="#5C6B84"
+      text-anchor="middle">reference replicates per fruit</text>
+  </svg>
+</div>
+
+<div class="col" style="left:977px;width:382px">
+  <div class="step">WHAT YOU GET</div>
+  <div class="tool">
+    <div class="t">1 &nbsp;A design rule</div>
+    <div class="d">Invert the ceiling: name a target R&sup2;, read off how many
+    replicate determinations your reference needs.</div>
+  </div>
+  <div class="tool">
+    <div class="t">2 &nbsp;A falsifiable diagnostic</div>
+    <div class="d">Predicts the attenuation ratio with
+    <b style="color:#16233A">no free parameter</b>, so it can be wrong.
+    On 633 apples it was not.</div>
+  </div>
+  <svg width="382" height="150" viewBox="-14 -32 334 150" style="margin-top:4px">
+    <line x1="0" y1="24" x2="300" y2="24" stroke="#CFD6E0"/>
+    <g><line x1="0.0" y1="24" x2="0.0" y2="29" stroke="#CFD6E0"/><text x="0.0" y="45" font-size="11.5" fill="#5C6B84" text-anchor="middle">0.45</text></g><g><line x1="88.2" y1="24" x2="88.2" y2="29" stroke="#CFD6E0"/><text x="88.2" y="45" font-size="11.5" fill="#5C6B84" text-anchor="middle">0.50</text></g><g><line x1="176.5" y1="24" x2="176.5" y2="29" stroke="#CFD6E0"/><text x="176.5" y="45" font-size="11.5" fill="#5C6B84" text-anchor="middle">0.55</text></g><g><line x1="264.7" y1="24" x2="264.7" y2="29" stroke="#CFD6E0"/><text x="264.7" y="45" font-size="11.5" fill="#5C6B84" text-anchor="middle">0.60</text></g>
+    <line x1="142.5" y1="24" x2="257.9" y2="24" stroke="#2E7D5B"
+      stroke-width="7" stroke-linecap="round"/>
+    <circle cx="200.6" cy="24" r="6.5" fill="#2E7D5B"/>
+    <text x="200.6" y="8" font-size="13" font-weight="600" fill="#2E7D5B"
+      text-anchor="middle">measured 0.564</text>
+    <text x="200.6" y="-9" font-size="11.5" fill="#5C6B84"
+      text-anchor="middle">95% CI [0.531, 0.596]</text>
+    <line x1="232.2" y1="12" x2="232.2" y2="36" stroke="#16233A"
+      stroke-width="2" stroke-dasharray="3 2"/>
+    <text x="232.2" y="63" font-size="12" font-weight="600" fill="#16233A"
+      text-anchor="middle">predicted 0.5816</text>
+    <text x="232.2" y="79" font-size="11.5" fill="#5C6B84"
+      text-anchor="middle">inside the interval &#10003;</text>
+    <line x1="47.6" y1="12" x2="47.6" y2="36" stroke="#B0392B"
+      stroke-width="2" stroke-dasharray="3 2"/>
+    <text x="47.6" y="63" font-size="12" font-weight="600" fill="#B0392B"
+      text-anchor="middle">0.477</text>
+    <text x="47.6" y="79" font-size="11.5" fill="#5C6B84"
+      text-anchor="middle">excluded</text>
+    <text x="150" y="112" font-size="12.5" fill="#5C6B84"
+      text-anchor="middle">attenuation ratio &mdash; measured vs. predicted</text>
+  </svg>
+</div>
+
+<div class="foot"><span>Report performance against a <b>reference-limited ceiling</b>
+  &mdash; not against unity.</span></div>
+</div></body></html>

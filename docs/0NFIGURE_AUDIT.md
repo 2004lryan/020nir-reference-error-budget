@@ -14,7 +14,7 @@
 | c | `B0figures_v18-图c.pdf` | `-fig-c.pdf` | 2 | `97instrbudget_v18.xlsx` 表d | **现场读取** ✅ |
 | d | `B0figures_v18-图d.pdf` | `-fig-d.pdf` | **1**（原 2） | `A4formal` 表c | **现场读取** ✅ |
 | **S1** | `B0suppfig_v18-图a.pdf` | `-fig-a.pdf` | 1 | `A6formal` T11 | **现场读取** ✅ **补充材料** |
-| **GA** | `B1graphabs.pdf`（单语，英文） | — | — | `93sscceiling` 表c ＋ `A5aggregate` 表b | **现场读取** ✅ **图形摘要**（不走 matplotlib，见下 G2） |
+| **GA** | `B1graphabs.pdf` / `.html`（单语，英文） | — | — | `93sscceiling` 表c ＋ `A5aggregate` 表b | **现场读取** ✅ **图文摘要**（不走 matplotlib，见下 G2） |
 | **e** | `B0figures_v18-图e.pdf` | `-fig-e.pdf` | 2 | `A9semisynth_v18.xlsx` 退化轨迹 | **现场 `pd.read_excel` 读取，零硬编码** ✅ |
 
 ## 二、逐项合规
@@ -51,5 +51,5 @@ ax2.plot(m, g["相对偏差 obs/pred−1"], ...)          # 相对偏差
 | 项 | 状态 | 说明 |
 |---|---|---|
 | ~~G1 图 a–d 仍用脚本常量~~ | ✅ **已闭合（2026-07-26）** | 独立一致性审计 判 `HP-PHANTOM-RESULT`（major）——绘图脚本的字面量与 §2.4「每个统计量均由脚本产出并写入工作簿」的声明矛盾，即 EF-001 复发。已把图 a–d 的全部数值改为从工作簿现场读取，脚本内**零字面量常量赋值**，读不到直接抛错、不回退硬编码。重生成后所有数值与原值一致（且为全精度） |
-| ~~G2 Graphical abstract~~ | ✅ **已重做（2026-08-28）** | 由 `B1graphabs.py` 产出，11.78×4.97 in = 3535×1491 px @300 dpi、比例 2.37:1，满足 Elsevier「最小 531×1328 px (h×w)」；矢量 PDF，字体全为拉丁字体（分栏标签用 A./B./C. 而非 ①②③——后者 Helvetica 缺字，转 PDF 会回退到中文字体）。**画的是论证骨架不是结果曲线**：A 被忽略的前提 → B 拆成误差预算 → C 两个可用工具。数值现场读 `93sscceiling` 表c 与 `A5aggregate` 表b。技术路线 FigureSpec（JSON）→ SVG，JSON 随产物留档（`outputs/B1graphabs.json`），渲染器不在手边也能逐个核数字。**替换了原 2026-07-26 的 `fig_ga()`**——那一版是图 a(c) 与图 e(a) 的重新拼版，两个 panel 都是数据曲线，读者不读正文看不懂框架 |
+| ~~G2 Graphical abstract~~ | ✅ **已重做（2026-08-28）** | 由 `B1graphabs.py` 产出，1050×420 pt = 4200×1680 px @300 dpi、比例 2.50:1，满足 Elsevier「最小 531×1328 px (h×w)」；矢量 PDF，字体全为拉丁字体（分栏标签用 A./B./C. 而非 ①②③——后者 Helvetica 缺字，转 PDF 会回退到中文字体）。**画的是论证骨架不是结果曲线**：A 被忽略的前提 → B 拆成误差预算 → C 两个可用工具。数值现场读 `93sscceiling` 表c 与 `A5aggregate` 表b。技术路线：Python 现场读工作簿 → 自包含 HTML（内联 SVG）→ Chrome headless 出 PDF/PNG。HTML 随产物留档（`figures/B1graphabs.html`），任何浏览器打开即可核对与改版式。**替换了原 2026-07-26 的 `fig_ga()`**——那一版是图 a(c) 与图 e(a) 的重新拼版，两个 panel 都是数据曲线，读者不读正文看不懂框架 |
 | **G3 §3.5 时序半段移入补充材料** | ✅ **已做（2026-07-26）** | 依预投稿评审建议（正文承载 5 条线、缺单一中心）。搬走 593 词 / 1439 字 + 图 d 面板 (b) → `Supplementary_{en,zh}.tex` §S1 + 图 S1。图 d 由 2 面板降为 1 面板。**数字守恒实测：正文＋补充合计 252 个不同数值，中英零单边** |

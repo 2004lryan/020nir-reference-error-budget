@@ -1,45 +1,41 @@
-"""图形摘要（Elsevier graphical abstract）：论证骨架的三栏框架图。
+"""图文摘要（Elsevier graphical abstract）：三栏叙事 + 内联 SVG 图元。
 
-与 B0figures_v18.py 的分工
---------------------------
-B0 画的是**结果图**（曲线、误差棒、方差分解），读者要先读正文才知道那些曲线在说什么。
-图形摘要的判据不同——它要让人**不读正文就看懂这篇在做什么**，所以本文件画的是
-论证骨架：A 被忽略的前提 → B 把它拆成误差预算 → C 由此得到的两个可用工具。
+判据是「不读正文就看懂这篇在做什么」，所以画的是论证骨架而非结果曲线的堆砌：
+  A 从没被检查的前提 —— 参考值自己带噪声，而 R²/RMSEP 把它当准确值
+  B 误差预算 —— 那点噪声把可达 R² 顶死在一个数上
+  C 交付物 —— 一条设计规则、一个无自由参数因而可证伪的诊断
 
-技术路线：FigureSpec（JSON）→ SVG。JSON 是确定性中间产物，同一份 spec 永远渲染出同一
-张图；数字全部现场读自工作簿，读不到直接抛错——绝不回退硬编码（回退等于把假零变成假
-证据，见 0NFIGURE_AUDIT 的 G1 条款）。JSON 随产物一起留档，即便渲染器不在手边，图上每
-个数字仍可逐个核回工作簿。
+技术路线：Python 现场读工作簿 → 生成自包含 HTML（内联 SVG）→ Chrome headless 出
+PDF/PNG。选 HTML 而非 matplotlib，是因为图文摘要要的是版式与字阶层次而不是坐标系；
+选内联 SVG 而非位图，是为了矢量可缩放。数字全部现场读，读不到直接抛错——绝不回退
+硬编码（回退等于把假零变成假证据，见 0NFIGURE_AUDIT 的 G1 条款）。
 
-布局口径（figure-spec 的 anti-pattern 反着来）
-  · 三栏顶边对齐，栏间隙 ≥16 px；
-  · 栏间连线只走水平或短弧，不画跨行长对角；
-  · 红色警示语做成 A 栏内的实体条——做成浮动标签会落在分组框外面；
-  · 全图不用 ①②③：Helvetica 缺这些字，转 PDF 时会回退到中文字体（苹方），
-    英文期刊图里不该嵌中文字体。分栏标签因此用 A./B./C.。
+版式口径
+  · 画布 1400×560 px（2.5:1）；@page 必须显式定尺寸，否则 Chrome 按 Letter 出并裁掉右栏
+  · 三栏等宽，栏间只用一条 1px 竖线分隔——不用分组框：旧版 12 个灰底圆角框把画面切碎了
+  · 核心数字（单面上界）做成 54px 视觉焦点，其余靠字重与色彩分层，不靠字号堆叠
+  · 字体走系统 Avenir Next / Helvetica Neue，全拉丁；不引 Adobe Fonts（要联网，本地
+    渲染吃不到），也不用 ①②③（Helvetica 缺字，转 PDF 会回退嵌入中文字体）
 
 产物（落点见下方 OUT / FIGS 的判定——本地与发布树两套目录名都支持）
-  B1graphabs.json            FigureSpec，数字可核
-  B1graphabs.svg / .pdf      图本身，矢量
+  B1graphabs.html            自包含源文件，可直接改版式
+  B1graphabs.pdf / .png      投稿上传件，矢量 + 300dpi 位图
 
 修订记录
 | 修订日期 | 轮次 | 改了什么 | 为什么改 |
 |---|---|---|---|
 | 2026-08-28 | 1 | 新建，取代 B0figures_v18.py 的 fig_ga | 旧版两 panel 都是数据曲线，看不出框架 |
+| 2026-08-28 | 2 | 路线由 FigureSpec/SVG 改为 HTML+SVG→Chrome | ryan 判「太丑」；灰框流程图无视觉焦点 |
 """
 
 from __future__ import annotations
 
-import json
+import math
 import os
 import shutil
 import subprocess
-import sys
-from typing import Any
 
 import pandas as pd
-
-Spec = dict[str, Any]
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 # 发布树里 04outputs/ 叫 outputs/、01manuscript/figs/ 叫 figures/。两套名字都要能跑——
@@ -50,6 +46,8 @@ _FIG_PUB = os.path.join(HERE, "..", "figures")
 FIGS = _FIG_PUB if os.path.isdir(_FIG_PUB) else os.path.join(
     HERE, "..", "06doc", "01manuscript", "figs")
 STEM = "B1graphabs"
+
+CANVAS_W, CANVAS_H = 1400, 560          # 2.50:1；@300dpi → 4375×1750 px，远超 Elsevier 下限
 
 
 def _sheet(book: str, name: str) -> pd.DataFrame:
@@ -70,200 +68,231 @@ ATT_PRED = float(_att.iloc[1]["均值之比（正文口径）"])
 
 BETWEEN = ICC * 100.0                    # 果间方差占比 = 单面参考值的可达上界
 WITHIN = (1.0 - ICC) * 100.0             # 果内方差占比 = 参考值自身的噪声
-CEIL_1 = ICC                             # 单面参考值的可达上界
-CEIL_5 = VAR_APPLE / (VAR_APPLE + VAR_FACE / 5.0)   # 五面均值作参考时的上界
+CEIL_1 = ICC
+CEIL_5 = VAR_APPLE / (VAR_APPLE + VAR_FACE / 5.0)
 
-# ── 配色：与 B0figures_v18.py 同族，但降饱和以适配大面积填充 ─────────────────
-BLUE, ORANGE, GREEN, RED, GREY = "#3B6EA5", "#E08A2E", "#3F8F5C", "#C0392B", "#7A7A7A"
-INK = "#222222"
-
-TOP = 88            # 三栏内容的统一上边缘
-ROW2 = TOP + 25     # B、C 两栏首行的中心纵坐标
+# ── 配色：降饱和以适配大面积填充；深靛蓝做主，暖橙标噪声，红标天花板，绿标已验证 ──
+INK, MUTED = "#16233A", "#5C6B84"
+BLUE, ORANGE, RED, GREEN = "#2E5E8C", "#D9822B", "#B0392B", "#2E7D5B"
 
 
-def build_spec() -> Spec:
-    return {
-        "title": "Graphical abstract — an error budget for NIR fruit calibration",
-        "canvas": {"width": 1130, "height": 476},
-        "style": {
-            "font_family": "Helvetica, Arial, sans-serif",
-            "font_size": 13,
-            "bg_color": "#FFFFFF",
-        },
-        "nodes": [
-            # A. 被忽略的前提：两条通路汇到同一个 R² 比较
-            {"id": "spec_in", "label": "NIR spectrum", "x": 96, "y": TOP + 21,
-             "width": 128, "height": 42, "fill": "#EAF1F8", "stroke": BLUE,
-             "text_color": INK, "font_size": 12.5},
-            {"id": "model", "label": "calibration\nmodel", "sublabel": "prediction ŷ",
-             "x": 238, "y": TOP + 21, "width": 116, "height": 56, "fill": "#EAF1F8",
-             "stroke": BLUE, "text_color": INK, "font_size": 12.5},
-            {"id": "fruit", "label": "one fruit", "x": 96, "y": TOP + 138,
-             "width": 128, "height": 42, "fill": "#FBF0E2", "stroke": ORANGE,
-             "text_color": INK, "font_size": 12.5},
-            {"id": "faces", "label": "5 destructive\ndeterminations",
-             "sublabel": "reference mean ȳ", "x": 240, "y": TOP + 138, "width": 132,
-             "height": 56, "fill": "#FBF0E2", "stroke": ORANGE, "text_color": INK,
-             "font_size": 12},
-            {"id": "compare", "label": "R²  /  RMSEP",
-             "sublabel": "judged against the reference",
-             "x": 428, "y": TOP + 80, "width": 186, "height": 58,
-             "fill": "#FFFFFF", "stroke": GREY, "text_color": INK, "font_size": 15},
-            # 警示语做成节点而非浮动标签，才会被 A 栏的分组框包住
-            {"id": "warn",
-             "label": "the comparison treats the reference as exact — it is not",
-             "x": 277, "y": TOP + 214, "width": 414, "height": 34,
-             "fill": "#FBEAE8", "stroke": RED, "text_color": RED, "font_size": 13},
-
-            # B. 误差预算：参考值的方差换算成天花板
-            {"id": "between", "label": f"between-fruit\n{BETWEEN:.2f}%",
-             "sublabel": "the signal — hence the ceiling", "x": 697, "y": ROW2,
-             "width": 168, "height": 50,
-             "fill": "#E7F2EA", "stroke": GREEN, "text_color": INK, "font_size": 12.5},
-            {"id": "within", "label": f"within-fruit\n{WITHIN:.2f}%",
-             "sublabel": "the reference’s own noise", "x": 697, "y": ROW2 + 84,
-             "width": 138, "height": 50, "fill": "#FBF0E2", "stroke": ORANGE,
-             "text_color": INK, "font_size": 12.5},
-            {"id": "ceiling", "label": f"ceiling R² = {CEIL_1:.3f}",
-             "sublabel": f"one face;  {CEIL_5:.3f} for the mean of all five",
-             "x": 697, "y": ROW2 + 176, "width": 216, "height": 52,
-             "fill": "#FBEAE8", "stroke": RED, "text_color": RED, "font_size": 14},
-
-            # C. 两个交付物
-            {"id": "tool1", "label": "Design rule",
-             "sublabel": "target R² → replicates needed", "x": 983, "y": ROW2 + 2,
-             "width": 220, "height": 54, "fill": "#EAF1F8", "stroke": BLUE,
-             "text_color": INK, "font_size": 13.5},
-            {"id": "tool2", "label": "Attenuation diagnostic",
-             "sublabel": "no free parameter — falsifiable", "x": 983, "y": ROW2 + 176,
-             "width": 220, "height": 54, "fill": "#EAF1F8", "stroke": BLUE,
-             "text_color": INK, "font_size": 13.5},
-            {"id": "tested",
-             "label": f"measured {ATT_OBS:.3f} [{ATT_LO:.3f}, {ATT_HI:.3f}]",
-             "sublabel": f"contains the predicted {ATT_PRED:.4f}; "
-                         f"excludes {CEIL_1:.3f}",
-             "x": 983, "y": ROW2 + 258, "width": 220, "height": 50, "fill": "#E7F2EA",
-             "stroke": GREEN, "text_color": INK, "font_size": 11.5},
-        ],
-        "edges": [
-            {"from": "spec_in", "to": "model", "color": BLUE, "thickness": 2},
-            {"from": "model", "to": "compare", "color": BLUE, "thickness": 2},
-            {"from": "fruit", "to": "faces", "color": ORANGE, "thickness": 2},
-            {"from": "faces", "to": "compare", "color": ORANGE, "thickness": 2},
-            {"from": "compare", "to": "between", "label": "decompose", "color": GREY,
-             "thickness": 2},
-            {"from": "compare", "to": "within", "color": GREY, "thickness": 2},
-            {"from": "within", "to": "ceiling", "label": "caps R²", "color": RED,
-             "thickness": 2},
-            {"from": "ceiling", "to": "tool1", "label": "invert", "color": GREY,
-             "thickness": 2, "curve": True},
-            {"from": "ceiling", "to": "tool2", "label": "test", "color": GREY,
-             "thickness": 2},
-            {"from": "tool2", "to": "tested", "color": GREEN, "thickness": 2},
-        ],
-        "groups": [
-            {"id": "g1", "label": "A.  The premise that is never checked",
-             "node_ids": ["spec_in", "model", "fruit", "faces", "compare", "warn"],
-             "fill": "#FAFBFC", "stroke": "#D6DCE2", "padding": 26},
-            {"id": "g2", "label": "B.  Decompose it into an error budget",
-             "node_ids": ["between", "within", "ceiling"],
-             "fill": "#FAFBFC", "stroke": "#D6DCE2", "padding": 26},
-            {"id": "g3", "label": "C.  Two tools, runnable on your own data",
-             "node_ids": ["tool1", "tool2", "tested"],
-             "fill": "#FAFBFC", "stroke": "#D6DCE2", "padding": 26},
-        ],
-        "labels": [
-            {"text": f"{N_FRUIT} apples × 5 faces", "x": 240, "y": TOP + 176,
-             "font_size": 11, "color": GREY, "anchor": "middle"},
-            {"text": "Report calibration performance against a reference-limited "
-                     "ceiling, not against unity",
-             "x": 565, "y": 456, "font_size": 14.5, "color": INK, "anchor": "middle"},
-        ],
-    }
+def ceiling_at(m: float) -> float:
+    """m 次参考重复测定下的可达 R² 上界。"""
+    return VAR_APPLE / (VAR_APPLE + VAR_FACE / m)
 
 
-def check_layout(spec: Spec) -> None:
-    """落点自检：节点两两不得重叠、分组不得越界、栏间隙不得过窄。
+def build_html() -> str:
+    # 上界曲线绘图区（局部坐标），y 轴 0.40–0.90
+    cw, ch = 300, 150
+    def px(m: float) -> float:
+        return (m - 1) / 9 * cw
 
-    渲染器的 validate 只查 schema，不查这三件事——初版正是栽在 model/faces 的右边缘
-    越过了 compare 的左边缘上：图看着"只是箭头有点怪"，实际是两个节点叠在了一起。
-    """
-    nodes = {n["id"]: n for n in spec["nodes"]}
+    def py(v: float) -> float:
+        return ch - (v - 0.40) / 0.50 * ch
 
-    def box(n: Spec) -> tuple[float, float, float, float]:
-        return (n["x"] - n["width"] / 2, n["y"] - n["height"] / 2,
-                n["x"] + n["width"] / 2, n["y"] + n["height"] / 2)
+    curve = " ".join(f'{"M" if i == 0 else "L"}{px(m):.1f},{py(ceiling_at(m)):.1f}'
+                     for i, m in enumerate(range(1, 11)))
+    yticks = "".join(
+        f'<g><line x1="-5" y1="{py(v):.1f}" x2="0" y2="{py(v):.1f}" stroke="#CFD6E0"/>'
+        f'<text x="-9" y="{py(v) + 4:.1f}" font-size="11.5" fill="{MUTED}" '
+        f'text-anchor="end">{v:.1f}</text></g>' for v in [0.5, 0.6, 0.7, 0.8, 0.9])
+    xticks = "".join(
+        f'<text x="{px(m):.1f}" y="{py(0.40) + 19:.1f}" font-size="11.5" fill="{MUTED}" '
+        f'text-anchor="middle">{m}</text>' for m in [1, 3, 5, 7, 10])
 
-    ids = list(nodes)
-    for i in range(len(ids)):
-        for j in range(i + 1, len(ids)):
-            a, b = box(nodes[ids[i]]), box(nodes[ids[j]])
-            if a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]:
-                raise AssertionError(f"节点重叠: {ids[i]} × {ids[j]}")
+    # 衰减比区间图（局部坐标），轴 0.45–0.62
+    aw = 300
+    def ax(v: float) -> float:
+        return (v - 0.45) / 0.17 * aw
 
-    canvas_w, canvas_h = spec["canvas"]["width"], spec["canvas"]["height"]
-    prev_right = None
-    for g in spec["groups"]:
-        bs = [box(nodes[i]) for i in g["node_ids"]]
-        pad = g["padding"]
-        x0, y0 = min(b[0] for b in bs) - pad, min(b[1] for b in bs) - pad
-        x1, y1 = max(b[2] for b in bs) + pad, max(b[3] for b in bs) + pad
-        if x0 < 0 or x1 > canvas_w or y0 < 0 or y1 > canvas_h:
-            raise AssertionError(f"分组 {g['id']} 越出画布: x {x0:.0f}–{x1:.0f} "
-                                 f"y {y0:.0f}–{y1:.0f}，画布 {canvas_w}×{canvas_h}")
-        if prev_right is not None and x0 - prev_right < 12:
-            raise AssertionError(f"分组 {g['id']} 与前一栏间隙仅 {x0 - prev_right:.0f}px")
-        prev_right = x1
+    aticks = "".join(
+        f'<g><line x1="{ax(v):.1f}" y1="24" x2="{ax(v):.1f}" y2="29" stroke="#CFD6E0"/>'
+        f'<text x="{ax(v):.1f}" y="45" font-size="11.5" fill="{MUTED}" '
+        f'text-anchor="middle">{v:.2f}</text></g>' for v in [0.45, 0.50, 0.55, 0.60])
+
+    # 苹果示意：5 个等角分布的测定点，透明度不同以暗示测值彼此不一致
+    dots = "".join(
+        f'<circle cx="{60 + 26 * math.cos(a):.1f}" cy="{60 + 26 * math.sin(a):.1f}" '
+        f'r="6.5" fill="{ORANGE}" opacity="{o}"/>'
+        for a, o in zip([-1.5708, -0.3142, 0.9425, 2.1991, 3.4558],
+                        ["1", ".62", ".86", ".5", ".74"], strict=True))
+
+    return f"""<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<title>Graphical abstract</title>
+<meta name="hz:slide-selector" content=".infographic">
+<meta name="hz:canvas-width" content="{CANVAS_W}">
+<meta name="hz:canvas-height" content="{CANVAS_H}">
+<style>
+*{{margin:0;padding:0;box-sizing:border-box}}
+body{{background:#fff}}
+/* 不给 @page 定尺寸，Chrome --print-to-pdf 会按 Letter 出并把右栏裁掉 */
+@page{{size:{CANVAS_W}px {CANVAS_H}px;margin:0}}
+@media print{{body{{margin:0}}.infographic{{page-break-after:avoid}}}}
+.infographic{{position:relative;width:{CANVAS_W}px;height:{CANVAS_H}px;background:#fff;
+  font-family:"Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif;
+  color:{INK};overflow:hidden}}
+.hdr{{position:absolute;left:0;top:0;width:{CANVAS_W}px;height:78px;background:{INK};
+  display:flex;align-items:center;padding:0 44px}}
+.hdr h1{{font-size:27px;font-weight:600;color:#fff;letter-spacing:-.2px}}
+.hdr .em{{color:#F2B872}}
+.col{{position:absolute;top:112px}}
+.step{{font-size:12px;font-weight:700;letter-spacing:1.6px;color:{MUTED};margin-bottom:9px}}
+.h2{{font-size:19px;font-weight:600;margin-bottom:13px;line-height:1.28}}
+.p{{font-size:14.5px;line-height:1.52;color:{MUTED}}}
+.big{{font-size:54px;font-weight:600;letter-spacing:-2px;color:{RED};line-height:1}}
+.big .u{{font-size:26px;font-weight:500;letter-spacing:-.3px}}
+.sub{{font-size:14px;color:{MUTED};margin-top:8px;line-height:1.5}}
+.rule{{position:absolute;top:112px;width:1px;height:352px;background:#DDE2EA}}
+.foot{{position:absolute;left:0;bottom:0;width:{CANVAS_W}px;height:62px;background:#F4F6F9;
+  display:flex;align-items:center;justify-content:center;border-top:1px solid #E3E7EE}}
+.foot span{{font-size:17px;font-weight:500;color:{INK}}}
+.tool{{margin-bottom:26px}}
+.tool .t{{font-size:15.5px;font-weight:600;margin-bottom:4px}}
+.tool .d{{font-size:13.5px;color:{MUTED};line-height:1.55}}
+text{{font-family:"Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif}}
+</style></head>
+<body><div class="infographic" data-canvas-width="{CANVAS_W}" data-canvas-height="{CANVAS_H}">
+
+<div class="hdr"><h1>Calibration R&sup2; is capped by the reference,
+  <span class="em">not by the model</span></h1></div>
+
+<div class="rule" style="left:466px"></div>
+<div class="rule" style="left:933px"></div>
+
+<div class="col" style="left:44px;width:382px">
+  <div class="step">THE UNCHECKED PREMISE</div>
+  <div class="h2">One fruit, five destructive<br>determinations &mdash; they disagree.</div>
+  <svg width="382" height="120" viewBox="0 0 382 120">
+    <circle cx="60" cy="60" r="42" fill="#FBF0E2" stroke="{ORANGE}" stroke-width="2"/>
+    {dots}
+    <text x="122" y="44" font-size="14.5" fill="{MUTED}">reference value &#563;</text>
+    <text x="122" y="66" font-size="14.5" fill="{MUTED}">carries its own</text>
+    <text x="122" y="88" font-size="15" font-weight="600" fill="{ORANGE}">measurement noise</text>
+  </svg>
+  <div class="p" style="margin-top:6px">Yet R&sup2; and RMSEP are read as if &#563; were
+  exact. In {N_FRUIT:,} apples the reference&rsquo;s own scatter is
+  <b style="color:{ORANGE}">{WITHIN:.2f}%</b> of the total.</div>
+  <svg width="382" height="52" viewBox="0 0 382 52" style="margin-top:14px">
+    <rect x="0" y="8" width="{382 * BETWEEN / 100:.1f}" height="26" fill="{GREEN}" opacity=".85"/>
+    <rect x="{382 * BETWEEN / 100:.1f}" y="8" width="{382 * WITHIN / 100:.1f}" height="26"
+      fill="{ORANGE}" opacity=".85"/>
+    <text x="6" y="26" font-size="13" font-weight="600" fill="#fff">between-fruit {BETWEEN:.2f}%</text>
+    <text x="{382 * BETWEEN / 100 + 7:.1f}" y="26" font-size="13" font-weight="600"
+      fill="#fff">within-fruit {WITHIN:.2f}%</text>
+    <text x="0" y="48" font-size="12" fill="{MUTED}">signal</text>
+    <text x="382" y="48" font-size="12" fill="{MUTED}" text-anchor="end">noise in the reference</text>
+  </svg>
+</div>
+
+<div class="col" style="left:510px;width:382px">
+  <div class="step">THE ERROR BUDGET</div>
+  <div class="h2">That noise sets a ceiling no<br>model can pass.</div>
+  <div class="big">{CEIL_1:.3f}<span class="u"> max R&sup2;</span></div>
+  <div class="sub">against a single-face reference; <b style="color:{INK}">{CEIL_5:.3f}</b>
+  against the five-face mean. Not fitted &mdash; it follows from the variance split alone.</div>
+  <svg width="352" height="162" viewBox="-42 -10 {cw + 64} {ch + 52}" style="margin-top:14px">
+    <line x1="0" y1="{py(0.40)}" x2="{cw}" y2="{py(0.40)}" stroke="#CFD6E0"/>
+    <line x1="0" y1="0" x2="0" y2="{py(0.40)}" stroke="#CFD6E0"/>
+    {yticks}
+    <path d="{curve}" fill="none" stroke="{BLUE}" stroke-width="2.6"/>
+    <circle cx="{px(1):.1f}" cy="{py(CEIL_1):.1f}" r="6" fill="{RED}"/>
+    <circle cx="{px(5):.1f}" cy="{py(CEIL_5):.1f}" r="6" fill="{GREEN}"/>
+    <text x="{px(1) + 11:.1f}" y="{py(CEIL_1) + 5:.1f}" font-size="12.5" font-weight="600"
+      fill="{RED}">{CEIL_1:.3f}</text>
+    <text x="{px(5) + 11:.1f}" y="{py(CEIL_5) + 5:.1f}" font-size="12.5" font-weight="600"
+      fill="{GREEN}">{CEIL_5:.3f}</text>
+    {xticks}
+    <text x="{cw / 2:.0f}" y="{py(0.40) + 40:.0f}" font-size="12.5" fill="{MUTED}"
+      text-anchor="middle">reference replicates per fruit</text>
+  </svg>
+</div>
+
+<div class="col" style="left:977px;width:382px">
+  <div class="step">WHAT YOU GET</div>
+  <div class="tool">
+    <div class="t">1 &nbsp;A design rule</div>
+    <div class="d">Invert the ceiling: name a target R&sup2;, read off how many
+    replicate determinations your reference needs.</div>
+  </div>
+  <div class="tool">
+    <div class="t">2 &nbsp;A falsifiable diagnostic</div>
+    <div class="d">Predicts the attenuation ratio with
+    <b style="color:{INK}">no free parameter</b>, so it can be wrong.
+    On {N_FRUIT:,} apples it was not.</div>
+  </div>
+  <svg width="382" height="150" viewBox="-14 -32 {aw + 34} 150" style="margin-top:4px">
+    <line x1="0" y1="24" x2="{aw}" y2="24" stroke="#CFD6E0"/>
+    {aticks}
+    <line x1="{ax(ATT_LO):.1f}" y1="24" x2="{ax(ATT_HI):.1f}" y2="24" stroke="{GREEN}"
+      stroke-width="7" stroke-linecap="round"/>
+    <circle cx="{ax(ATT_OBS):.1f}" cy="24" r="6.5" fill="{GREEN}"/>
+    <text x="{ax(ATT_OBS):.1f}" y="8" font-size="13" font-weight="600" fill="{GREEN}"
+      text-anchor="middle">measured {ATT_OBS:.3f}</text>
+    <text x="{ax(ATT_OBS):.1f}" y="-9" font-size="11.5" fill="{MUTED}"
+      text-anchor="middle">95% CI [{ATT_LO:.3f}, {ATT_HI:.3f}]</text>
+    <line x1="{ax(ATT_PRED):.1f}" y1="12" x2="{ax(ATT_PRED):.1f}" y2="36" stroke="{INK}"
+      stroke-width="2" stroke-dasharray="3 2"/>
+    <text x="{ax(ATT_PRED):.1f}" y="63" font-size="12" font-weight="600" fill="{INK}"
+      text-anchor="middle">predicted {ATT_PRED:.4f}</text>
+    <text x="{ax(ATT_PRED):.1f}" y="79" font-size="11.5" fill="{MUTED}"
+      text-anchor="middle">inside the interval &#10003;</text>
+    <line x1="{ax(CEIL_1):.1f}" y1="12" x2="{ax(CEIL_1):.1f}" y2="36" stroke="{RED}"
+      stroke-width="2" stroke-dasharray="3 2"/>
+    <text x="{ax(CEIL_1):.1f}" y="63" font-size="12" font-weight="600" fill="{RED}"
+      text-anchor="middle">{CEIL_1:.3f}</text>
+    <text x="{ax(CEIL_1):.1f}" y="79" font-size="11.5" fill="{MUTED}"
+      text-anchor="middle">excluded</text>
+    <text x="{aw / 2:.0f}" y="112" font-size="12.5" fill="{MUTED}"
+      text-anchor="middle">attenuation ratio &mdash; measured vs. predicted</text>
+  </svg>
+</div>
+
+<div class="foot"><span>Report performance against a <b>reference-limited ceiling</b>
+  &mdash; not against unity.</span></div>
+</div></body></html>"""
 
 
-def find_renderer() -> str | None:
-    """定位 figure-spec 的渲染器；找不到返回 None（只出 JSON，不假装出了图）。"""
-    cands = []
-    if os.environ.get("CLAUDE_SKILL_DIR"):
-        cands.append(os.path.join(os.environ["CLAUDE_SKILL_DIR"], "scripts",
-                                  "figure_renderer.py"))
-    cands += [
-        os.path.expanduser("~/.claude/skills/figure-spec/scripts/figure_renderer.py"),
-        os.path.join(HERE, "..", ".aris", "tools", "figure_renderer.py"),
+def find_chrome() -> str | None:
+    """定位 Chrome/Chromium；找不到返回 None（只出 HTML，不假装出了 PDF）。"""
+    cands = [
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "/Applications/Chromium.app/Contents/MacOS/Chromium",
+        "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
     ]
-    return next((c for c in cands if os.path.isfile(c)), None)
+    found = next((c for c in cands if os.path.isfile(c)), None)
+    return found or shutil.which("google-chrome") or shutil.which("chromium")
 
 
 def main() -> None:
-    spec = build_spec()
-    check_layout(spec)
-
     os.makedirs(FIGS, exist_ok=True)
-    js = os.path.join(OUT, f"{STEM}.json")
-    with open(js, "w", encoding="utf-8") as f:
-        json.dump(spec, f, ensure_ascii=False, indent=2)
-    print(f"spec  → {os.path.relpath(js, HERE)}  "
-          f"({len(spec['nodes'])} nodes / {len(spec['edges'])} edges)")
+    html_path = os.path.join(FIGS, f"{STEM}.html")
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(build_html())
+    print(f"html  → {os.path.relpath(html_path, HERE)}")
     print(f"  ICC={ICC:.4f}  果间={BETWEEN:.2f}%  果内={WITHIN:.2f}%  "
           f"上界 单面={CEIL_1:.3f} 五面均值={CEIL_5:.3f}  n={N_FRUIT}")
     print(f"  衰减比实测 {ATT_OBS:.4f} [{ATT_LO:.4f}, {ATT_HI:.4f}]  预言 {ATT_PRED:.4f}")
 
-    renderer = find_renderer()
-    if renderer is None:
-        print("\n⚠ 未找到 figure_renderer.py（figure-spec skill），只产出了 JSON。")
-        print("  安装该 skill 后重跑本脚本即可得到 SVG/PDF；"
-              "JSON 里的数字已可逐个核回工作簿。")
+    chrome = find_chrome()
+    if chrome is None:
+        print("\n⚠ 未找到 Chrome/Chromium，只产出了 HTML。")
+        print("  用任意浏览器打开该 HTML 打印为 PDF 即可；页面尺寸已写进 @page。")
         return
 
-    svg = os.path.join(FIGS, f"{STEM}.svg")
-    subprocess.run([sys.executable, renderer, "render", js, "--output", svg], check=True)
-
-    # SVG → PDF：本机无 rsvg-convert / inkscape / cairosvg，走 LibreOffice
-    soffice = shutil.which("soffice") or shutil.which("libreoffice")
-    if soffice is None:
-        print("⚠ 未找到 soffice/libreoffice，跳过 PDF；SVG 已产出。")
-        return
-    subprocess.run([soffice, "--headless", "--convert-to", "pdf", "--outdir", FIGS, svg],
-                   check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    base = ["--headless", "--disable-gpu", "--hide-scrollbars"]
+    url = "file://" + html_path
     pdf = os.path.join(FIGS, f"{STEM}.pdf")
-    if not os.path.isfile(pdf):
-        raise RuntimeError(f"PDF 未生成: {pdf}")
-    print(f"图GA  → {os.path.relpath(svg, HERE)} / {os.path.relpath(pdf, HERE)}")
+    png = os.path.join(FIGS, f"{STEM}.png")
+    subprocess.run([chrome, *base, "--no-pdf-header-footer", f"--print-to-pdf={pdf}", url],
+                   check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run([chrome, *base, "--force-device-scale-factor=3",
+                    f"--window-size={CANVAS_W},{CANVAS_H}", f"--screenshot={png}", url],
+                   check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for p in (pdf, png):
+        if not os.path.isfile(p):
+            raise RuntimeError(f"未生成: {p}")
+    print(f"图GA  → {os.path.relpath(pdf, HERE)} / {os.path.relpath(png, HERE)}")
 
 
 if __name__ == "__main__":
