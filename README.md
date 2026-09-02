@@ -41,7 +41,8 @@ the same diagnostics on **your own** data:
 What **is** released here is everything derived from them: all analysis code, every
 intermediate result workbook (`outputs/*.xlsx`), the raw per-run records
 (`outputs/*_raw.json`: the Formal apple main table and leakage controls, the Formal
-supplementary runs, the terminal-date decomposition and the semi-synthetic experiment),
+supplementary runs, the terminal-date decomposition, the semi-synthetic experiment and the
+fixed-predictor comparison behind the retraining term),
 all figures, and the
 pre-registered statistical protocol. **Every statistic in the manuscript is traceable to a
 specific table in `outputs/`** — see `docs/claim_evidence_map.md` for the claim-by-claim map.
@@ -80,8 +81,8 @@ share a random stream).
 ## Layout
 
 ```
-code/       23 analysis scripts + export_utils.py
-outputs/    20 result workbooks (.xlsx) + 4 files of raw per-run records (.json)
+code/       24 analysis scripts + export_utils.py
+outputs/    22 result workbooks (.xlsx) + 5 files of raw per-run records (.json)
 figures/    the 7 figures of the manuscript, vector PDF
 docs/       pre-registered statistical protocol, method ledger, figure audit,
             claim–evidence map, dataset datasheets
