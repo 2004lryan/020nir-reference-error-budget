@@ -39,8 +39,10 @@ the same diagnostics on **your own** data:
 | **Kiwifruit NIR dry matter / SSC** (5,418 fruit, 11,982 spectra, 2–5 devices) | Instrument-side error budget, semi-synthetic degradation test | Public dataset — obtain it from its original source and place it under `$HSI_DATA_ROOT`. |
 
 What **is** released here is everything derived from them: all analysis code, every
-intermediate result workbook (`outputs/*.xlsx`), the raw per-run records of the
-semi-synthetic experiment (`outputs/A9semisynth_v18_raw.json`), all figures, and the
+intermediate result workbook (`outputs/*.xlsx`), the raw per-run records
+(`outputs/*_raw.json`: the Formal apple main table and leakage controls, the Formal
+supplementary runs, the terminal-date decomposition and the semi-synthetic experiment),
+all figures, and the
 pre-registered statistical protocol. **Every statistic in the manuscript is traceable to a
 specific table in `outputs/`** — see `docs/claim_evidence_map.md` for the claim-by-claim map.
 
@@ -78,8 +80,8 @@ share a random stream).
 ## Layout
 
 ```
-code/       21 analysis scripts + export_utils.py
-outputs/    18 result workbooks (.xlsx) + 2 files of raw per-run records (.json)
+code/       23 analysis scripts + export_utils.py
+outputs/    20 result workbooks (.xlsx) + 4 files of raw per-run records (.json)
 figures/    the 7 figures of the manuscript, vector PDF
 docs/       pre-registered statistical protocol, method ledger, figure audit,
             claim–evidence map, dataset datasheets
