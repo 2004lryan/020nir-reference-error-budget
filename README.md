@@ -1,10 +1,11 @@
-# An error budget for near-infrared fruit calibration
+# Reference-value uncertainty in near-infrared fruit calibration
 
 Code, intermediate result workbooks and the pre-registered statistical protocol for the
 manuscript:
 
-> **An error budget for near-infrared fruit calibration: a reference-replicate design rule
-> and a falsifiable attenuation diagnostic**
+> **Reference-value uncertainty limits near-infrared determination of soluble solids and dry
+> matter in fruit: an error budget, a replicate-sampling design rule, and a test for
+> reference-limited calibration**
 > Panlin Li, Yuchang Li, Yutong Feng, Longjie Li, Ya Liu, Hua Huang\*
 > Xinjiang Agricultural University · *manuscript in preparation*
 
