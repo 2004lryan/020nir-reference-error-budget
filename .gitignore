@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.DS_Store
+._*
+# 原始数据一律不进仓库（001/002 为新疆农业大学内部数据，未公开发布）
+data/
+*.npz
+*.parquet
+logs/
+checkpoints/
