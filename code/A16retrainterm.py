@@ -28,6 +28,10 @@ HP-ASSUMPTION-SMUGGLE, major, false_positive_risk=low）：
 
 [免检] 不引入新方法：固定/oracle 预测器对照是既有评估器的一次重用。
 
+自助种子：逐档 CI 的种子由 (目标, m) 的字节经 CRC-32 得出（boot_seed），合并 CI 的种子
+固定为 7，两者都与进程和平台无关。表a、表b 只由逐重复原始值经确定性运算得出
+（build_tables），是 raw json 的确定性函数。
+
 运行:
     python3 02code/A16retrainterm.py
 
@@ -36,6 +40,7 @@ HP-ASSUMPTION-SMUGGLE, major, false_positive_risk=low）：
       表a  逐 (target, m) 的 retrained / fixed / 预言 三条曲线与 Δ
       表b  Δ 的 cluster bootstrap 95% CI（按 (m, seed) 单元重抽，与 A9 同法）
       表c  本表读法与限度
+      表d  重训臂逐档相对偏差与 A9 已发布值之差（04outputs/ 下有 A9semisynth_v18_raw.json 时）
     04outputs/A16retrainterm_raw.json  — 逐重复原始值
 """
 from __future__ import annotations
@@ -48,11 +53,15 @@ for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
 
 import json  # noqa: E402
 import multiprocessing as mp  # noqa: E402
+import platform  # noqa: E402
 import time  # noqa: E402
+import zlib  # noqa: E402
 from typing import Any  # noqa: E402
 
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
+import scipy  # noqa: E402
+import sklearn  # noqa: E402
 from numpy.typing import NDArray  # noqa: E402
 from scipy.signal import savgol_filter  # noqa: E402
 from sklearn.cross_decomposition import PLSRegression  # noqa: E402
@@ -174,20 +183,87 @@ def boot_mean(by: dict[Any, list[float]], b: int = N_BOOT,
             float(np.percentile(vals, 97.5)))
 
 
-def main() -> None:
-    t0 = time.time()
-    print(f"A16retrainterm — SEEDS={SEEDS_FORMAL}  m∈{M_LEVELS}(0=∞)  nrep={NREP}", flush=True)
-    units = [(t, m, s) for t in ("DM", "SSC") for m in M_LEVELS for s in SEEDS_FORMAL]
-    with mp.Pool(min(20, max(1, mp.cpu_count() - 2))) as pool:
-        runs = pool.map(task, units)
-    print(f"  {len(units)} 个单元完成 {time.time() - t0:.0f}s", flush=True)
+def boot_seed(tgt: str, m: int) -> int:
+    """逐档自助 CI 的种子：(目标, m) 的 UTF-8 字节经 CRC-32 得出，与进程和平台无关。
 
-    with open(_os.path.join(OUT, "A16retrainterm_raw.json"), "w", encoding="utf-8") as fh:
-        json.dump({"seeds": SEEDS_FORMAL, "m_levels": M_LEVELS, "nrep": NREP,
-                   "ratio_apple": RATIO, "runs": runs}, fh, ensure_ascii=False, indent=1)
+    字符串的内置 hash() 每个进程随机加盐，拿它定种子，CI 端点每跑一次都会变。
+    93sscceiling_v18 给分产地 CI 定种子也用 zlib.crc32。
+    """
+    return zlib.crc32(f"{tgt}|m={m}".encode())
 
+
+def env_desc() -> str:
+    """运行环境：Python 与各库版本、BLAS、操作系统与 CPU。整轮重跑的逐位复现只在同一平台上成立。"""
+    try:
+        cfg: Any = np.show_config(mode="dicts")
+        dep = cfg["Build Dependencies"]["blas"]
+        blas = f"{dep.get('name', '?')} {dep.get('version', '?')}"
+    except (KeyError, TypeError, ValueError):
+        blas = "未知"
+    cpu = platform.processor() or platform.machine()
+    if _os.path.isfile("/proc/cpuinfo"):
+        with open("/proc/cpuinfo", encoding="utf-8") as fh:
+            names = [ln.split(":", 1)[1].strip() for ln in fh if ln.startswith("model name")]
+        cpu = names[0] if names else cpu
+    return (f"Python {platform.python_version()}，numpy {np.__version__}，scipy {scipy.__version__}，"
+            f"scikit-learn {sklearn.__version__}，pandas {pd.__version__}；BLAS {blas}；"
+            f"{platform.system()} {platform.machine()}，CPU {cpu}")
+
+
+def a9_compare(runs: list[dict[str, Any]]) -> tuple[str, list[dict[str, Any]]]:
+    """把本次运行的重训臂与 A9 已发布值逐项比对：逐次 R² 与逐档相对偏差。
+
+    返回写进表c 的实测说明与表d 各行。A9 的逐档相对偏差按 A9semisynth_v18 的口径由其逐次值复算，
+    本次的按 build_tables 的口径由 runs 复算，两者都取全精度相减。
+    """
+    path = _os.path.join(OUT, "A9semisynth_v18_raw.json")
+    if not _os.path.isfile(path):
+        return "本次运行未与 A9 比对：找不到 A9semisynth_v18_raw.json。", []
+    with open(path, encoding="utf-8") as fh:
+        a9_runs = json.load(fh)["runs"]
+    a9 = {(r["target"], r["m"], r["seed"]): r for r in a9_runs}
+    n_rep = n_same = n_flip = 0
+    max_diff = 0.0
+    for r in runs:
+        ref = a9.get((r["target"], r["m"], r["seed"]))
+        if ref is None:
+            continue
+        for v, w, c, d in zip(r["reps_retrained"], ref["reps_noisy"],
+                              r["ncomp_retrained"], ref["ncomp"], strict=True):
+            n_rep += 1
+            n_same += int(v == w)
+            n_flip += int(c != d)
+            max_diff = max(max_diff, abs(v - w))
+    rows_d: list[dict[str, Any]] = []
+    for tgt in ("DM", "SSC"):
+        mine = [r for r in runs if r["target"] == tgt]
+        ref_t = [r for r in a9_runs if r["target"] == tgt]
+        clean = float(np.mean([v for r in mine if r["m"] == 0 for v in r["reps_retrained"]]))
+        clean9 = float(np.mean([np.mean(r["reps_noisy"]) for r in ref_t if r["m"] == 0]))
+        for m in M_LEVELS:
+            if m == 0:
+                continue
+            sy2, sf2 = mine[0]["sigma_y2"], mine[0]["sigma_f2"]
+            sy9, sf9 = ref_t[0]["sigma_y2"], ref_t[0]["sigma_f2"]
+            obs = float(np.mean([v for r in mine if r["m"] == m for v in r["reps_retrained"]]))
+            obs9 = float(np.mean([np.mean(r["reps_noisy"]) for r in ref_t if r["m"] == m]))
+            dev = 100 * (obs / (clean * sy2 / (sy2 + sf2 / m)) - 1)
+            dev9 = 100 * (obs9 / (clean9 * sy9 / (sy9 + sf9 / m)) - 1)
+            rows_d.append({"目标": tgt, "m": m, "A9 相对偏差(%)": round(dev9, 6),
+                           "本次重训臂相对偏差(%)": round(dev, 6), "差(百分点)": round(dev - dev9, 6),
+                           "差的绝对值(全精度)": abs(dev - dev9)})
+    worst = max(rows_d, key=lambda row: float(row["差的绝对值(全精度)"]))
+    note = (f"本次运行的重训臂与 A9 已发布值逐项比对：逐次 R² 在 {n_rep} 次重复中 {n_same} 次逐位相同，"
+            f"{n_flip} 次所选成分数不同，最大差 {max_diff:.2e}；逐档相对偏差与 A9 至多差 "
+            f"{float(worst['差的绝对值(全精度)']):.4f} 个百分点（{worst['目标']}，m={worst['m']}，见表d）。")
+    return note, rows_d
+
+
+def build_tables(runs: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """由逐重复原始值组装表a、表b。只有确定性运算，给定 runs 即逐位确定。"""
     # R²_clean 基线：m=∞ 档的重训臂（此时无噪声，两臂同义），与 A9 口径一致
-    rows_a, rows_b = [], []
+    rows_a: list[dict[str, Any]] = []
+    rows_b: list[dict[str, Any]] = []
     for tgt in ("DM", "SSC"):
         base = [r for r in runs if r["target"] == tgt and r["m"] == 0]
         r2_clean = float(np.mean([v for r in base for v in r["reps_retrained"]]))
@@ -201,7 +277,7 @@ def main() -> None:
                     else r2_clean * sig_y2 / (sig_y2 + sig_f2 / m))
             d_by: dict[Any, list[float]] = {(r["seed"],): [f - q for f, q in
                                    zip(r["reps_fixed"], r["reps_retrained"], strict=True)] for r in sel}
-            dmean, dlo, dhi = boot_mean(d_by, seed=hash((tgt, m)) % (2 ** 32))
+            dmean, dlo, dhi = boot_mean(d_by, seed=boot_seed(tgt, m))
             rows_a.append({
                 "目标": tgt, "m": "∞" if m == 0 else m,
                 "R²_pred 式(degrade)": round(pred, 6),
@@ -209,11 +285,14 @@ def main() -> None:
                 "R²_固定预测器臂": round(float(np.mean(fx_v)), 6),
                 "重训项 Δ=固定−重训": round(dmean, 6),
                 "Δ 的 95%CI 下限": round(dlo, 6), "Δ 的 95%CI 上限": round(dhi, 6),
-                "固定臂相对预言偏差(%)": round(100 * (float(np.mean(fx_v)) / pred - 1), 3),
-                "重训臂相对预言偏差(%)": round(100 * (float(np.mean(re_v)) / pred - 1), 3),
+                "固定臂相对预言偏差(%)": round(100 * (float(np.mean(fx_v)) / pred - 1), 6),
+                "重训臂相对预言偏差(%)": round(100 * (float(np.mean(re_v)) / pred - 1), 6),
+                "两臂相对偏差之差(百分点)":
+                    round(100 * (float(np.mean(fx_v)) - float(np.mean(re_v))) / pred, 6),
                 "成分数中位(重训/固定)":
                     f"{int(np.median([c for r in sel for c in r['ncomp_retrained']]))}/"
                     f"{int(np.median([c for r in sel for c in r['ncomp_fixed']]))}",
+                "Δ 自助种子": boot_seed(tgt, m),
             })
     # 表b：把 12 个有限 m 档合并，给出 Δ 与两臂相对偏差的总体口径
     for tgt in ("DM", "SSC"):
@@ -226,12 +305,28 @@ def main() -> None:
             "目标": tgt, "合并档数": len(sub),
             "Δ 均值": round(dmean, 6), "Δ 95%CI": f"[{dlo:.6f}, {dhi:.6f}]",
             "固定臂相对预言偏差中位(%)":
-                round(float(np.median([r["固定臂相对预言偏差(%)"] for r in sub])), 3),
+                round(float(np.median([r["固定臂相对预言偏差(%)"] for r in sub])), 6),
             "重训臂相对预言偏差中位(%)":
-                round(float(np.median([r["重训臂相对预言偏差(%)"] for r in sub])), 3),
+                round(float(np.median([r["重训臂相对预言偏差(%)"] for r in sub])), 6),
             "Δ>0 的档数": sum(1 for r in sub if float(r["重训项 Δ=固定−重训"]) > 0),
         })
+    return rows_a, rows_b
 
+
+def main() -> None:
+    t0 = time.time()
+    print(f"A16retrainterm — SEEDS={SEEDS_FORMAL}  m∈{M_LEVELS}(0=∞)  nrep={NREP}", flush=True)
+    units = [(t, m, s) for t in ("DM", "SSC") for m in M_LEVELS for s in SEEDS_FORMAL]
+    with mp.Pool(min(20, max(1, mp.cpu_count() - 2))) as pool:
+        runs = pool.map(task, units)
+    print(f"  {len(units)} 个单元完成 {time.time() - t0:.0f}s", flush=True)
+
+    with open(_os.path.join(OUT, "A16retrainterm_raw.json"), "w", encoding="utf-8") as fh:
+        json.dump({"seeds": SEEDS_FORMAL, "m_levels": M_LEVELS, "nrep": NREP,
+                   "ratio_apple": RATIO, "env": env_desc(), "runs": runs}, fh, ensure_ascii=False, indent=1)
+
+    rows_a, rows_b = build_tables(runs)
+    note, rows_d = a9_compare(runs)
     rows_c = [
         {"项": "本表回答的问题",
          "说明": "式 (degrade) 把 R²_clean 原样带过，只对『注入之前即已固定、误差与注入噪声"
@@ -244,14 +339,16 @@ def main() -> None:
         {"项": "Δ 的读法",
          "说明": "Δ = R²_固定 − R²_重训 > 0 表示重训在带噪标签上损失了性能，即式 (degrade) "
                  "作为重训过程的预言偏乐观、作为设计规则的下限方向保守。CI 由与 A9 相同的"
-                 f"两级簇自助给出（{N_BOOT} 次，按单元重抽）。"},
-        {"项": "平台效应为何不污染 Δ",
-         "说明": "本机重训臂与 A9 已发布的逐次值并非逐位相同：实测同一 (DM, m=5, 20060515) 单元"
-                 "6 次重复中 1 次逐位相同、其余 R² 差 ~1e-3，机制是内层 CV 的 MSE 曲线在高成分数"
-                 "段近平坦，BLAS 浮点差翻转了所选成分数（A9 记录 22/22/22/24/24/24，本机 "
-                 "24/24/24/22/24/22）。这不影响本表：两条臂在**同一台机器、同一次重复、同一份噪声、"
-                 "同一划分**上跑，Δ 是配对差，平台效应对两臂同向作用后相消。因此 Δ 可跨平台读，"
-                 "而两臂各自的绝对 R² 只在本机口径下成立。"},
+                 f"两级簇自助给出（{N_BOOT} 次，按单元重抽）。逐档 CI 的种子由 (目标, m) 经 "
+                 "CRC-32 得出（表a「Δ 自助种子」列），合并 CI 的种子为 7，两者都与进程和平台无关，"
+                 "表a、表b 因而是 A16retrainterm_raw.json 的确定性函数。"},
+        {"项": "跨平台",
+         "说明": note + "机制是内层 CV 的 MSE 曲线在高成分数段近平坦，BLAS 浮点差可翻转"
+                 "所选成分数，翻转移动的是该次重复的 R²。两条臂在同一台机器、同一次重复、同一份噪声、"
+                 "同一划分上跑，Δ 是同次配对差；翻转可以只落在一条臂上，所以 Δ 与两臂各自的绝对 R² "
+                 "一样，都是单一平台下的值。"},
+        {"项": "运行环境",
+         "说明": env_desc() + "。整轮重跑的逐位复现以同一平台、同一 BLAS 为前提。"},
         {"项": "限度（必须一并读）",
          "说明": "① 固定臂仍用同一训练集拟合，只是标签干净，因此它是『注入前固定』的一个"
                  "实现而非唯一实现；② 本表不构成对不变性的证明，只给出该假设在本数据、"
@@ -263,6 +360,8 @@ def main() -> None:
         pd.DataFrame(rows_a).to_excel(xw, sheet_name="表a逐m两臂", index=False)
         pd.DataFrame(rows_b).to_excel(xw, sheet_name="表b合并与CI", index=False)
         pd.DataFrame(rows_c).to_excel(xw, sheet_name="表c读法与限度", index=False)
+        if rows_d:
+            pd.DataFrame(rows_d).to_excel(xw, sheet_name="表d重训臂对A9逐档", index=False)
     print(f"写出 {out}   总耗时 {time.time() - t0:.0f}s")
     for r in rows_b:
         print(f"  {r['目标']}: Δ={r['Δ 均值']:.4f} {r['Δ 95%CI']}  "

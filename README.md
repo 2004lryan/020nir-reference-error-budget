@@ -26,7 +26,7 @@ diagnostics on **your own** data:
 
 | Deliverable | Where | What it answers |
 |---|---|---|
-| **Replicate design rule** | `code/93sscceiling_v18.py` | How many approximately independent spatial subsamples per specimen does a target $R^2$ require? |
+| **Replicate design rule** | `code/93sscceiling_v18.py`, `code/A17designtable.py` | How many approximately independent spatial subsamples per specimen does a target $R^2$ require? |
 | **Attenuation-ratio diagnostic** | `code/A4formal_v18.py`, `code/A5aggregate_v18.py` | Is your reported performance actually bound by reference-value variability? (parameter-free, falsifiable) |
 | **Two-level grouped validation + audit** | `code/95splitleak_v18.py`, `code/A6formal_v18.py`, `code/A7datepos_v18.py` | Is your grouping level right — and is your "leakage" real, or an artefact of a target derived from the grouping variable? (the withdrawn day-level reading and its control test are §S4 and Fig. S1 of `paper/Supplementary_en.pdf`) |
 | **Semi-synthetic degradation test** | `code/A9semisynth_v18.py`, `code/A10margin_v18.py` | Does reference noise degrade performance the way the theory predicts? (pre-registered) |
@@ -50,9 +50,13 @@ supplementary runs, the terminal-date decomposition, the semi-synthetic experime
 fixed-predictor comparison behind the retraining term),
 all figures, and the
 pre-registered statistical protocol. `docs/claim_evidence_map.md` binds each claim to the
-script and workbook table it comes from; a few derived values that are closed-form functions
-of stored components (for example the design table of Section 3.5) are recomputed rather than
-stored, and dataset metadata are traceable to the data cards in `docs/` instead.
+script and workbook table it comes from. The design table of Section 3.5 and the single-face
+SD of Section 3.1, closed-form functions of stored variance components, are exported to
+`outputs/A17designtable.xlsx`. The interval of the five-face ceiling in Section 3.1 is the
+closed-form transform of the ICC interval, which `outputs/93sscceiling_v18.xlsx` stores rounded
+to three decimals; its endpoints, computed from those rounded bounds, are recorded in table a of
+`outputs/A14reprocheck_f1_v18.xlsx`, and unrounded bounds could move them by one unit in the third
+decimal. Dataset metadata are traceable to the data cards in `docs/` instead.
 
 Process-level intermediates (e.g. the $B=2000$ bootstrap resamples) are not shipped; they
 are replayable from the scripts and the fixed seeds.
@@ -68,6 +72,7 @@ python code/A3prep.py                     # kiwifruit csv -> 03data/processed/v1
 python code/97instrbudget_v18.py          # instrument-side error budget
 python code/A9semisynth_v18.py            # semi-synthetic degradation (pre-registered V9b)
 python code/A10margin_v18.py              # margin rule inversion + lookup
+python code/A17designtable.py             # design table and single-face SD from the stored variance components
 python code/B0figures_v18.py              # all figures
 python code/B1graphabs.py                 # graphical abstract (HTML with inline SVG -> PDF via headless Chrome)
 ```
@@ -79,7 +84,7 @@ day-level runs and the controls with non-derived targets (Supplementary S4) sit 
 
 Scripts that need the apple data (`93sscceiling`, `94localsense`, `95splitleak`,
 `96satdiag`, `A1consolidate`, `A2forensicfix`, `A4formal`, `A6formal`, `A8meta`,
-`A11derived`, `A15maskcheck`) will not run, or not in full, without it; their **outputs are
+`A11derived`, `A15maskcheck`, and table d of `A17designtable`) will not run, or not in full, without it; their **outputs are
 included** in `outputs/` so the downstream analyses and every number in the paper, except
 those of the cross-architecture replay, remain checkable.
 
@@ -98,8 +103,8 @@ share a random stream).
 ## Layout
 
 ```
-code/       25 scripts + export_utils.py
-outputs/    22 result workbooks (.xlsx) + 5 files of raw per-run records (.json)
+code/       26 scripts + export_utils.py
+outputs/    23 result workbooks (.xlsx) + 5 files of raw per-run records (.json)
 figures/    the 7 figures of the manuscript, vector PDF
 docs/       pre-registered statistical protocol, method ledger, figure audit,
             claim–evidence map, dataset datasheets
